@@ -40,7 +40,7 @@
     <EnableLLVM>false</EnableLLVM>
     <AndroidSupportedAbis>
     </AndroidSupportedAbis>
-    <AndroidEnableProfiledAot>true</AndroidEnableProfiledAot>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <MandroidI18n />
     <AndroidKeyStore>false</AndroidKeyStore>
     <AndroidSigningKeyAlias>
@@ -50,7 +50,7 @@
     <AndroidUseAapt2>true</AndroidUseAapt2>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <AndroidLinkTool>r8</AndroidLinkTool>
+    <AndroidDexTool>d8</AndroidDexTool>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>portable</DebugType>
