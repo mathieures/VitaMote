@@ -4,7 +4,7 @@ using Android.OS;
 using Android.Views.InputMethods;
 
 namespace VitaMote {
-    [Activity(Label = "VitaMote", MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity(Label = "VitaMote", MainLauncher = true, Icon = "@drawable/icon", Exported = true)]
     public class MainActivity : Activity {
         TextView label1;
         protected override void OnCreate(Bundle bundle) {
@@ -54,7 +54,6 @@ namespace VitaMote {
             }
         }
         private string reFile() {
-            string ip = "0";
             Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
             Java.IO.File dir = new Java.IO.File(sdCard.AbsolutePath+"/SonryVitaMote");
             Java.IO.File file = new Java.IO.File(dir, "ip.scf");
@@ -65,7 +64,7 @@ namespace VitaMote {
             else {
                 Java.IO.FileReader fread = new Java.IO.FileReader(file);
                 Java.IO.BufferedReader br = new Java.IO.BufferedReader(fread);
-                ip=br.ReadLine();
+                string ip = br.ReadLine();
                 fread.Close();
                 return ip;
             }

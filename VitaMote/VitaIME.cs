@@ -1,29 +1,32 @@
-using System;
 using Android.App;
 using Android.Content;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Android.InputMethodServices;
-using static Android.InputMethodServices.KeyboardView;
-using Java.Lang;
-using Android.Views.InputMethods;
-using System.Threading.Tasks;
-using System.Net.Sockets;
+using Android.Runtime;
 using Android.Util;
+using Android.Views;
+using Android.Views.InputMethods;
+using Android.Widget;
+using Java.Lang;
+using System;
+using System.Net.Sockets;
+using System.Threading.Tasks;
+using static Android.InputMethodServices.KeyboardView;
 
-namespace VitaMote {
-    [Service(Label = "VitaIME", Permission = "android.permission.BIND_INPUT_METHOD")]
+namespace VitaMote
+{
+    [Service(Label = "VitaIME", Permission = "android.permission.BIND_INPUT_METHOD", Exported = true)]
     [MetaData(name: "android.view.im", Resource = "@xml/method")]
-    [IntentFilter(new [] { "android.view.InputMethod" })]
-    class VitaIME : InputMethodService, IOnKeyboardActionListener {
-        System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
+    [IntentFilter(new[] { "android.view.InputMethod" })]
+    class VitaIME : InputMethodService, IOnKeyboardActionListener
+    {
+        readonly System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
         private KeyboardView kv;
         private Keyboard keyboard;
         private bool caps = false;
         IInputConnection ic;
         //Buttons
-        int b1, b2, b3, b4, b5, b6, b7, b8,b9;
+        int b1, b2, b3, b4, b5, b6, b7, b8;
+        //int b1, b2, b3, b4, b5, b6, b7, b8, b9;
         //Type 1
         const int btnL = 128;
         const int btnR = 32;
@@ -112,8 +115,10 @@ namespace VitaMote {
         Android.Views.Keycode aRr = Android.Views.Keycode.L;
 
         //Custom Mapping System
-        public void loadCM() {
-            try {
+        public void loadCM()
+        {
+            try
+            {
                 int l = 0;
                 string line;
                 Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
@@ -121,8 +126,10 @@ namespace VitaMote {
                 Java.IO.File file = new Java.IO.File(dir, "cm.scf");
                 Java.IO.FileReader fread = new Java.IO.FileReader(file);
                 Java.IO.BufferedReader br = new Java.IO.BufferedReader(fread);
-                while ((line = br.ReadLine()) != null) {
-                    switch (l) {
+                while ((line = br.ReadLine()) != null)
+                {
+                    switch (l)
+                    {
                         case 0:
                             bUp = (Android.Views.Keycode)Integer.ParseInt(line);
                             break;
@@ -188,20 +195,23 @@ namespace VitaMote {
                 }
                 fread.Close();
             }
-            catch (System.Exception ex) {
+            catch (System.Exception ex)
+            {
                 Log.Verbose("{1}", ex.ToString());
-                
+
             }
 
-            
+
         }
 
 
         bool timer = false;
 
-        public void OnKey([GeneratedEnum] Android.Views.Keycode primaryCode, [GeneratedEnum] Android.Views.Keycode [] keyCodes) {
+        public void OnKey([GeneratedEnum] Android.Views.Keycode primaryCode, [GeneratedEnum] Android.Views.Keycode[] keyCodes)
+        {
             IInputConnection ic = CurrentInputConnection;
-            switch ((int)primaryCode) {
+            switch ((int)primaryCode)
+            {
                 case (int)Android.Views.Keycode.Del:
                     //ic.SendKeyEvent(new KeyEvent(KeyEventActions.Down,Android.Views.Keycode.Del));
                     ic.DeleteSurroundingText(1, 0);
@@ -215,18 +225,21 @@ namespace VitaMote {
                     ic.SendKeyEvent(new KeyEvent(KeyEventActions.Down, Android.Views.Keycode.Enter));
                     break;
                 case (int)Android.Views.Keycode.Button9:
-                    try {
+                    try
+                    {
                         onREC();
                     }
-                    catch (System.Exception ex) {
+                    catch (System.Exception ex)
+                    {
                         Toast.MakeText(this, "PSVITA Connected", ToastLength.Long).Show();
-                        Log.Info("Exception: ",ex.ToString());
+                        Log.Info("Exception: ", ex.ToString());
                     }
 
                     break;
                 default:
                     char code = (char)primaryCode;
-                    if (Character.IsLetter(code) && caps) {
+                    if (Character.IsLetter(code) && caps)
+                    {
                         code = Character.ToUpperCase(code);
                     }
                     ic.CommitText(Java.Lang.String.ValueOf(code), 1);
@@ -234,93 +247,112 @@ namespace VitaMote {
             }
         }
         //This part of the code are useless, but there is no form to continue without this part of the code
-        public void OnPress([GeneratedEnum] Android.Views.Keycode primaryCode) {
+        public void OnPress([GeneratedEnum] Android.Views.Keycode primaryCode)
+        {
             //OnKey(primaryCode);
             //throw new NotImplementedException();
         }
 
-        public void OnRelease([GeneratedEnum] Android.Views.Keycode primaryCode) {
+        public void OnRelease([GeneratedEnum] Android.Views.Keycode primaryCode)
+        {
             // throw new NotImplementedException();
         }
 
-        public void OnText(ICharSequence text) {
+        public void OnText(ICharSequence text)
+        {
             //  throw new NotImplementedException();
         }
 
-        public void SwipeDown() {
+        public void SwipeDown()
+        {
             //   throw new NotImplementedException();
         }
 
-        public void SwipeLeft() {
+        public void SwipeLeft()
+        {
             //throw new NotImplementedException();
         }
 
-        public void SwipeRight() {
+        public void SwipeRight()
+        {
             //throw new NotImplementedException();
         }
 
-        public void SwipeUp() {
+        public void SwipeUp()
+        {
             //  throw new NotImplementedException();
         }
-        public override void OnCreate() {
+        public override void OnCreate()
+        {
             base.OnCreate();
             loadCM();
-            string ip = "0";
             timer = true;
             Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
             Java.IO.File dir = new Java.IO.File(sdCard.AbsolutePath + "/SonryVitaMote");
             Java.IO.File file = new Java.IO.File(dir, "ip.scf");
             Java.IO.FileReader fread = new Java.IO.FileReader(file);
             Java.IO.BufferedReader br = new Java.IO.BufferedReader(fread);
-            ip = br.ReadLine();
+            string ip = br.ReadLine();
             fread.Close();
-            try {
+            try
+            {
                 clientSocket.Connect(ip, 5000);
-                if (clientSocket.Connected) {
+                if (clientSocket.Connected)
+                {
                     Toast.MakeText(this, "PS VITA Connected", ToastLength.Long).Show();
                     RunUpdateLoop();
-                } else {
+                }
+                else
+                {
                     Toast.MakeText(this, "Couldn't connect", ToastLength.Long).Show();
                 }
 
             }
-            catch (System.Exception ex) {
+            catch (System.Exception ex)
+            {
                 Toast.MakeText(this, "Network Error, try again", ToastLength.Long).Show();
                 Log.Info("Exception: ", ex.ToString());
             }
 
 
         }
-        public void onREC() {
-            string ip = "0";
+        public void onREC()
+        {
             timer = true;
             Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
             Java.IO.File dir = new Java.IO.File(sdCard.AbsolutePath + "/SonryVitaMote");
             Java.IO.File file = new Java.IO.File(dir, "ip.scf");
             Java.IO.FileReader fread = new Java.IO.FileReader(file);
             Java.IO.BufferedReader br = new Java.IO.BufferedReader(fread);
-            ip = br.ReadLine();
+            string ip = br.ReadLine();
             fread.Close();
-            try {
+            try
+            {
                 clientSocket.Connect(ip, 5000);
-                if (clientSocket.Connected) {
+                if (clientSocket.Connected)
+                {
                     Toast.MakeText(this, "PS VITA Connected", ToastLength.Long).Show();
                     RunUpdateLoop();
-                } else {
+                }
+                else
+                {
                     Toast.MakeText(this, "Couldn't Connect", ToastLength.Long).Show();
                 }
 
             }
-            catch (System.Exception ex) {
+            catch (System.Exception ex)
+            {
                 Toast.MakeText(this, "Network Error, try again", ToastLength.Long).Show();
                 Log.Info("Exception: ", ex.ToString());
             }
         }
-        public override void OnDestroy() {
-            base.OnDestroy();
+        //public override void OnDestroy()
+        //{
+        //    base.OnDestroy();
 
-        }
-        public override View OnCreateInputView() {
+        //}
+        public override View OnCreateInputView()
+        {
             kv = (KeyboardView)LayoutInflater.Inflate(Resource.Layout.keyboard, null);
             keyboard = new Keyboard(this, Resource.Xml.qwerty);
             kv.Keyboard = keyboard;
@@ -329,12 +361,15 @@ namespace VitaMote {
         }
 
 
-        private async void RunUpdateLoop() {
+        private async void RunUpdateLoop()
+        {
             NetworkStream serverStream = clientSocket.GetStream();
-            while (timer) {
-                try {
+            while (timer)
+            {
+                try
+                {
                     await Task.Delay(100);
-                    byte [] outStream = System.Text.Encoding.ASCII.GetBytes("request");
+                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes("request");
                     serverStream.Write(outStream, 0, outStream.Length);
                     serverStream.Flush();
                     b1 = serverStream.ReadByte();//DPAD + SEL + STA
@@ -345,145 +380,179 @@ namespace VitaMote {
                     b6 = serverStream.ReadByte();//L ANALOG Y DATA
                     b7 = serverStream.ReadByte();//R ANALOG X DATA
                     b8 = serverStream.ReadByte();//R ANLAOG Y DATA
-                    byte [] inStream = new byte [clientSocket.ReceiveBufferSize];
+                    byte[] inStream = new byte[clientSocket.ReceiveBufferSize];
                     serverStream.Read(inStream, 0, (int)clientSocket.ReceiveBufferSize);
-                    b9 = BitConverter.ToInt32(inStream, 0);//TOUCHSCREEN DATA (Not Used Yet)
+                    //b9 = BitConverter.ToInt32(inStream, 0);//TOUCHSCREEN DATA (Not Used Yet)
                     keySystem(b1, b2, b3, b4, b5, b6, b7, b8);
                 }
-                catch (System.Exception ex) {
+                catch (System.Exception ex)
+                {
                     Toast.MakeText(this, "PSVITA Disconnected", ToastLength.Long).Show();
                     Log.Info("Exception: ", ex.ToString());
                     timer = false;
                 }
             }
         }
-        private void keySystem(int a, int b, int c, int d, int e, int f, int g, int h) {
+        private void keySystem(int a, int b, int c, int d, int e, int f, int g, int h)
+        {
             ic = CurrentInputConnection;
             //DPAD + SEL STA
-            if (a == btnU) {
+            if (a == btnU)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bUp);
                 ic.SendKeyEvent(ks);
-            } else {
+            }
+            else
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Up, bUp);
                 ic.SendKeyEvent(ks);
             }
-            if (a == btnR) {
+            if (a == btnR)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ks);
-            } else {
+            }
+            else
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Up, bRi);
                 ic.SendKeyEvent(ks);
             }
-            if (a == btnD) {
+            if (a == btnD)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bDo);
                 ic.SendKeyEvent(ks);
-            } else {
+            }
+            else
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Up, bDo);
                 ic.SendKeyEvent(ks);
             }
-            if (a == btnL) {
+            if (a == btnL)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ks);
-            } else {
+            }
+            else
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Up, bLe);
                 ic.SendKeyEvent(ks);
             }
-            if (a == btnSel) {
+            if (a == btnSel)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(ks);
-            } else {
+            }
+            else
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Up, bSe);
                 ic.SendKeyEvent(ks);
             }
-            if (a == btnSta) {
+            if (a == btnSta)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(ks);
-            } else {
+            }
+            else
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Up, bSt);
                 ic.SendKeyEvent(ks);
             }
             //Combos (Dpad & Dpad + Sel or Sta)
-            if (a == btnLU) {
+            if (a == btnLU)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bUp);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnLD) {
+            if (a == btnLD)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bDo);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnRU) {
+            if (a == btnRU)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bUp);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnRD) {
+            if (a == btnRD)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bDo);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnUSt) {
+            if (a == btnUSt)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bUp);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnUSe) {
+            if (a == btnUSe)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bUp);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnDSt) {
+            if (a == btnDSt)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bDo);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnDSe) {
+            if (a == btnDSe)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bDo);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnLSt) {
+            if (a == btnLSt)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnLSe) {
+            if (a == btnLSe)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnRSt) {
+            if (a == btnRSt)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnRSe) {
+            if (a == btnRSe)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(kd);
             }
 
-            if (a == btnSeSt) {
+            if (a == btnSeSt)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
             //Triple (Dpad + Sel or Sta)
-            if (a == btnLUSt) {
+            if (a == btnLUSt)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ka);
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bSt);
@@ -491,7 +560,8 @@ namespace VitaMote {
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bUp);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnLUSe) {
+            if (a == btnLUSe)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ka);
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bSe);
@@ -499,7 +569,8 @@ namespace VitaMote {
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bUp);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnLDSt) {
+            if (a == btnLDSt)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ka);
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bDo);
@@ -507,7 +578,8 @@ namespace VitaMote {
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnLDSe) {
+            if (a == btnLDSe)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ka);
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bSe);
@@ -516,7 +588,8 @@ namespace VitaMote {
                 ic.SendKeyEvent(kd);
             }
 
-            if (a == btnRUSt) {
+            if (a == btnRUSt)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ka);
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bUp);
@@ -524,7 +597,8 @@ namespace VitaMote {
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnRUSe) {
+            if (a == btnRUSe)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ka);
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bUp);
@@ -532,7 +606,8 @@ namespace VitaMote {
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnRDSt) {
+            if (a == btnRDSt)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ka);
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bDo);
@@ -540,7 +615,8 @@ namespace VitaMote {
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
-            if (a == btnRDSe) {
+            if (a == btnRDSe)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ka);
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bDo);
@@ -550,127 +626,159 @@ namespace VitaMote {
             }
 
             //TCXS + L R
-            if (b == 16) {
+            if (b == 16)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bT);
                 ic.SendKeyEvent(ka);
-            } else {
+            }
+            else
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Up, bT);
                 ic.SendKeyEvent(ka);
             }
-            if (b == 32) {
+            if (b == 32)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bC);
                 ic.SendKeyEvent(ka);
-            } else {
+            }
+            else
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Up, bC);
                 ic.SendKeyEvent(ka);
             }
-            if (b == 64) {
+            if (b == 64)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bX);
                 ic.SendKeyEvent(ka);
-            } else {
+            }
+            else
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Up, bX);
                 ic.SendKeyEvent(ka);
             }
-            if (b == 128) {
+            if (b == 128)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bS);
                 ic.SendKeyEvent(ka);
-            } else {
+            }
+            else
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Up, bS);
                 ic.SendKeyEvent(ka);
             }
-            if (b == 1) {
+            if (b == 1)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bLt);
                 ic.SendKeyEvent(ka);
-            } else {
+            }
+            else
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Up, bLt);
                 ic.SendKeyEvent(ka);
             }
-            if (b == 2) {
+            if (b == 2)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(ka);
-            } else {
+            }
+            else
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Up, bRt);
                 ic.SendKeyEvent(ka);
             }
-            if (b == btnXC) {
+            if (b == btnXC)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bX);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bC);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnXS) {
+            if (b == btnXS)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bX);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bS);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnCT) {
+            if (b == btnCT)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bC);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bT);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnTS) {
+            if (b == btnTS)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bT);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bS);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnXLt) {
+            if (b == btnXLt)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bX);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bLt);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnXRt) {
+            if (b == btnXRt)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bX);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnCLt) {
+            if (b == btnCLt)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bC);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bLt);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnCRt) {
+            if (b == btnCRt)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bC);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnTLt) {
+            if (b == btnTLt)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bT);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bLt);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnTRt) {
+            if (b == btnTRt)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bT);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnSLt) {
+            if (b == btnSLt)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bS);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bLt);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnSRt) {
+            if (b == btnSRt)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bS);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnLR) {
+            if (b == btnLR)
+            {
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLt);
                 ic.SendKeyEvent(ks);
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnLRC) {
+            if (b == btnLRC)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bC);
                 ic.SendKeyEvent(ka);
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLt);
@@ -678,7 +786,8 @@ namespace VitaMote {
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnLRT) {
+            if (b == btnLRT)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bT);
                 ic.SendKeyEvent(ka);
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLt);
@@ -686,7 +795,8 @@ namespace VitaMote {
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnLRS) {
+            if (b == btnLRS)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bS);
                 ic.SendKeyEvent(ka);
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLt);
@@ -694,7 +804,8 @@ namespace VitaMote {
                 KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
-            if (b == btnLRX) {
+            if (b == btnLRX)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, bX);
                 ic.SendKeyEvent(ka);
                 KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLt);
@@ -703,68 +814,92 @@ namespace VitaMote {
                 ic.SendKeyEvent(kd);
             }
             //Analogs
-            if (e <= 50 && e >= 0) {
+            if (e <= 50 && e >= 0)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, aLl);
                 ic.SendKeyEvent(ka);
-            } else {
+            }
+            else
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Up, aLl);
                 ic.SendKeyEvent(ka);
             }
-            if (e >= 200 && e <= 255) {
+            if (e >= 200 && e <= 255)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, aLr);
                 ic.SendKeyEvent(ka);
-            } else {
+            }
+            else
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Up, aLr);
                 ic.SendKeyEvent(ka);
             }
 
-            if (f <= 50 && f >= 0) {
+            if (f <= 50 && f >= 0)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, aLu);
                 ic.SendKeyEvent(ka);
-            } else {
+            }
+            else
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Up, aLu);
                 ic.SendKeyEvent(ka);
             }
-            if (f >= 200 && f <= 255) {
+            if (f >= 200 && f <= 255)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, aLd);
                 ic.SendKeyEvent(ka);
-            } else {
+            }
+            else
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Up, aLd);
                 ic.SendKeyEvent(ka);
             }
 
 
             //Analogs
-            if (g <= 50 && g >= 0) {
+            if (g <= 50 && g >= 0)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, aRl);
                 ic.SendKeyEvent(ka);
 
-            } else {
+            }
+            else
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Up, aRl);
                 ic.SendKeyEvent(ka);
             }
-            if (g >= 200 && g <= 255) {
+            if (g >= 200 && g <= 255)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, aRr);
                 ic.SendKeyEvent(ka);
-            } else {
+            }
+            else
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Up, aRr);
                 ic.SendKeyEvent(ka);
             }
 
-            if (h <= 50 && g >= 0) {
+            if (h <= 50 && g >= 0)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, aRu);
                 ic.SendKeyEvent(ka);
-            } else {
+            }
+            else
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Up, aRu);
                 ic.SendKeyEvent(ka);
             }
-            if (h >= 200 && h <= 255) {
+            if (h >= 200 && h <= 255)
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Down, aRd);
                 ic.SendKeyEvent(ka);
-            } else {
+            }
+            else
+            {
                 KeyEvent ka = new KeyEvent(KeyEventActions.Up, aRd);
                 ic.SendKeyEvent(ka);
             }
         }
-     }
+    }
 }
