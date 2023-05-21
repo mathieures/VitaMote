@@ -2,13 +2,13 @@
 
 Fork of SonryP's VitaMote to make the app work on recent Android versions.
 
-The plan is to remove the deprecated components and replace them with up-to-date alternatives.
+The plan is to remove the deprecated components and replace them with up-to-date alternatives, as well as depending less on Java and more on C#.
 
-Fixed issues:
+To fix:
 
-- Crash on startup
-- Crash when opening custom mapping settings
+- The `Keyboard` and `KeyboardView` classes are deprecated
+- The custom keyboard does not appear in the list of input methods
 
-To do:
+Planned improvements:
 
-- Fix input method not showing in the list
+- Put some variables in arrays/lists (`b1, b2, ..., b8` for example)
