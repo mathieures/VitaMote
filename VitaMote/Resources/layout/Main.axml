@@ -7,7 +7,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/editText1"
-        android:text="192.168.0.3" />
+        android:text="192.168.0.3"
+        android:inputType="text" />
     <Button
         android:id="@+id/MyButton"
         android:layout_width="fill_parent"

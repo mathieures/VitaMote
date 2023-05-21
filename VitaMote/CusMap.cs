@@ -1,18 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using Android.App;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
 
-namespace VitaMote {
+namespace VitaMote
+{
 
     [Activity(Label = "Custom Mapping")]
-    public class CusMap : Activity {
+    public class CusMap : Activity
+    {
         //KeyCodes
-        Keycode [] dk = { Keycode.A, Keycode.B, Keycode.C, Keycode.D, Keycode.E, Keycode.F, Keycode.G, Keycode.H, Keycode.I, Keycode.J, Keycode.K, Keycode.L, Keycode.M, Keycode.N, Keycode.O, Keycode.P, Keycode.Q, Keycode.R, Keycode.S, Keycode.T, Keycode.U, Keycode.V, Keycode.W, Keycode.X, Keycode.Y, Keycode.Z, Keycode.AltLeft, Keycode.AltRight, Keycode.Apostrophe, Keycode.AppSwitch, Keycode.Assist, Keycode.At, Keycode.AvrInput, Keycode.AvrPower, Keycode.Back, Keycode.Backslash, Keycode.Bookmark, Keycode.Break, Keycode.BrightnessUp, Keycode.BrightnessDown, Keycode.Button1, Keycode.Button2, Keycode.Button3, Keycode.Button4, Keycode.Button5, Keycode.Button6, Keycode.Button7, Keycode.Button8, Keycode.Button9, Keycode.Button10, Keycode.Button11, Keycode.Button12, Keycode.Button13, Keycode.Button14, Keycode.Button15, Keycode.Button16, Keycode.ButtonA, Keycode.ButtonB, Keycode.ButtonC, Keycode.ButtonX, Keycode.ButtonY, Keycode.ButtonZ, Keycode.ButtonL1, Keycode.ButtonL2, Keycode.ButtonR1, Keycode.ButtonR2, Keycode.ButtonSelect, Keycode.ButtonStart, Keycode.ButtonMode, Keycode.ButtonThumbl, Keycode.ButtonThumbr, Keycode.Calculator, Keycode.Calendar, Keycode.Call, Keycode.Camera, Keycode.CapsLock, Keycode.Captions, Keycode.ChannelUp, Keycode.ChannelDown, Keycode.Clear, Keycode.Comma, Keycode.Contacts, Keycode.Copy, Keycode.CtrlLeft, Keycode.CtrlRight, Keycode.Cut, Keycode.Del, Keycode.DpadCenter, Keycode.DpadDownLeft, Keycode.DpadDownRight, Keycode.DpadUpLeft, Keycode.DpadUpRight, Keycode.DpadLeft, Keycode.DpadRight, Keycode.DpadUp, Keycode.DpadDown, Keycode.Dvr, Keycode.Eisu, Keycode.Endcall, Keycode.Enter, Keycode.Envelope, Keycode.Equals, Keycode.Escape, Keycode.Explorer, Keycode.F1, Keycode.F2, Keycode.F3, Keycode.F4, Keycode.F5, Keycode.F6, Keycode.F7, Keycode.F8, Keycode.F9, Keycode.F10, Keycode.F11, Keycode.F12, Keycode.Focus, Keycode.Forward, Keycode.ForwardDel, Keycode.Function, Keycode.Grave, Keycode.Guide, Keycode.Headsethook, Keycode.Help, Keycode.Henkan, Keycode.Home, Keycode.Info, Keycode.Insert, Keycode.K11, Keycode.K12, Keycode.Kana, Keycode.KatakanaHiragana, Keycode.LanguageSwitch, Keycode.LastChannel, Keycode.LeftBracket, Keycode.MannerMode, Keycode.MediaAudioTrack, Keycode.MediaClose, Keycode.MediaEject, Keycode.MediaFastForward, Keycode.MediaNext, Keycode.MediaPause, Keycode.MediaPlay, Keycode.MediaPlayPause, Keycode.MediaPrevious, Keycode.MediaRecord, Keycode.MediaRewind, Keycode.MediaStop, Keycode.Menu, Keycode.Minus, Keycode.Music, Keycode.Mute, Keycode.NavigateIn, Keycode.NavigateOut, Keycode.NavigatePrevious, Keycode.Notification, Keycode.Num, Keycode.Num0, Keycode.Num1, Keycode.Num2, Keycode.Num3, Keycode.Num4, Keycode.Num5, Keycode.Num6, Keycode.Num7, Keycode.Num8, Keycode.Num9, Keycode.NumLock, Keycode.Numpad0, Keycode.Numpad1, Keycode.Numpad2, Keycode.Numpad3, Keycode.Numpad4, Keycode.Numpad5, Keycode.Numpad6, Keycode.Numpad7, Keycode.Numpad8, Keycode.Numpad9, Keycode.NumpadAdd, Keycode.NumpadComma, Keycode.NumpadDivide, Keycode.NumpadDot, Keycode.NumpadEnter, Keycode.NumpadEquals, Keycode.NumpadMultiply, Keycode.NumpadSubtract, Keycode.NumpadLeftParen, Keycode.NumpadRightParen, Keycode.PageDown, Keycode.PageUp, Keycode.Pairing, Keycode.Paste, Keycode.Period, Keycode.Plus, Keycode.Pound, Keycode.Power, Keycode.ProgGreen, Keycode.ProgRed, Keycode.ProgBlue, Keycode.ProgYellow, Keycode.RightBracket, Keycode.Search, Keycode.Semicolon, Keycode.Settings, Keycode.ShiftLeft, Keycode.ShiftRight, Keycode.Slash, Keycode.Sleep, Keycode.Space, Keycode.Star, Keycode.Sym, Keycode.Sysrq, Keycode.Tab, Keycode.VolumeDown, Keycode.VolumeUp, Keycode.VolumeMute, Keycode.Wakeup, Keycode.Window, Keycode.ZoomIn, Keycode.ZoomOut };
+        Keycode[] dk = { Keycode.A, Keycode.B, Keycode.C, Keycode.D, Keycode.E, Keycode.F, Keycode.G, Keycode.H, Keycode.I, Keycode.J, Keycode.K, Keycode.L, Keycode.M, Keycode.N, Keycode.O, Keycode.P, Keycode.Q, Keycode.R, Keycode.S, Keycode.T, Keycode.U, Keycode.V, Keycode.W, Keycode.X, Keycode.Y, Keycode.Z, Keycode.AltLeft, Keycode.AltRight, Keycode.Apostrophe, Keycode.AppSwitch, Keycode.Assist, Keycode.At, Keycode.AvrInput, Keycode.AvrPower, Keycode.Back, Keycode.Backslash, Keycode.Bookmark, Keycode.Break, Keycode.BrightnessUp, Keycode.BrightnessDown, Keycode.Button1, Keycode.Button2, Keycode.Button3, Keycode.Button4, Keycode.Button5, Keycode.Button6, Keycode.Button7, Keycode.Button8, Keycode.Button9, Keycode.Button10, Keycode.Button11, Keycode.Button12, Keycode.Button13, Keycode.Button14, Keycode.Button15, Keycode.Button16, Keycode.ButtonA, Keycode.ButtonB, Keycode.ButtonC, Keycode.ButtonX, Keycode.ButtonY, Keycode.ButtonZ, Keycode.ButtonL1, Keycode.ButtonL2, Keycode.ButtonR1, Keycode.ButtonR2, Keycode.ButtonSelect, Keycode.ButtonStart, Keycode.ButtonMode, Keycode.ButtonThumbl, Keycode.ButtonThumbr, Keycode.Calculator, Keycode.Calendar, Keycode.Call, Keycode.Camera, Keycode.CapsLock, Keycode.Captions, Keycode.ChannelUp, Keycode.ChannelDown, Keycode.Clear, Keycode.Comma, Keycode.Contacts, Keycode.Copy, Keycode.CtrlLeft, Keycode.CtrlRight, Keycode.Cut, Keycode.Del, Keycode.DpadCenter, Keycode.DpadDownLeft, Keycode.DpadDownRight, Keycode.DpadUpLeft, Keycode.DpadUpRight, Keycode.DpadLeft, Keycode.DpadRight, Keycode.DpadUp, Keycode.DpadDown, Keycode.Dvr, Keycode.Eisu, Keycode.Endcall, Keycode.Enter, Keycode.Envelope, Keycode.Equals, Keycode.Escape, Keycode.Explorer, Keycode.F1, Keycode.F2, Keycode.F3, Keycode.F4, Keycode.F5, Keycode.F6, Keycode.F7, Keycode.F8, Keycode.F9, Keycode.F10, Keycode.F11, Keycode.F12, Keycode.Focus, Keycode.Forward, Keycode.ForwardDel, Keycode.Function, Keycode.Grave, Keycode.Guide, Keycode.Headsethook, Keycode.Help, Keycode.Henkan, Keycode.Home, Keycode.Info, Keycode.Insert, Keycode.K11, Keycode.K12, Keycode.Kana, Keycode.KatakanaHiragana, Keycode.LanguageSwitch, Keycode.LastChannel, Keycode.LeftBracket, Keycode.MannerMode, Keycode.MediaAudioTrack, Keycode.MediaClose, Keycode.MediaEject, Keycode.MediaFastForward, Keycode.MediaNext, Keycode.MediaPause, Keycode.MediaPlay, Keycode.MediaPlayPause, Keycode.MediaPrevious, Keycode.MediaRecord, Keycode.MediaRewind, Keycode.MediaStop, Keycode.Menu, Keycode.Minus, Keycode.Music, Keycode.Mute, Keycode.NavigateIn, Keycode.NavigateOut, Keycode.NavigatePrevious, Keycode.Notification, Keycode.Num, Keycode.Num0, Keycode.Num1, Keycode.Num2, Keycode.Num3, Keycode.Num4, Keycode.Num5, Keycode.Num6, Keycode.Num7, Keycode.Num8, Keycode.Num9, Keycode.NumLock, Keycode.Numpad0, Keycode.Numpad1, Keycode.Numpad2, Keycode.Numpad3, Keycode.Numpad4, Keycode.Numpad5, Keycode.Numpad6, Keycode.Numpad7, Keycode.Numpad8, Keycode.Numpad9, Keycode.NumpadAdd, Keycode.NumpadComma, Keycode.NumpadDivide, Keycode.NumpadDot, Keycode.NumpadEnter, Keycode.NumpadEquals, Keycode.NumpadMultiply, Keycode.NumpadSubtract, Keycode.NumpadLeftParen, Keycode.NumpadRightParen, Keycode.PageDown, Keycode.PageUp, Keycode.Pairing, Keycode.Paste, Keycode.Period, Keycode.Plus, Keycode.Pound, Keycode.Power, Keycode.ProgGreen, Keycode.ProgRed, Keycode.ProgBlue, Keycode.ProgYellow, Keycode.RightBracket, Keycode.Search, Keycode.Semicolon, Keycode.Settings, Keycode.ShiftLeft, Keycode.ShiftRight, Keycode.Slash, Keycode.Sleep, Keycode.Space, Keycode.Star, Keycode.Sym, Keycode.Sysrq, Keycode.Tab, Keycode.VolumeDown, Keycode.VolumeUp, Keycode.VolumeMute, Keycode.Wakeup, Keycode.Window, Keycode.ZoomIn, Keycode.ZoomOut };
         List<Keycode> allM = new List<Keycode>();
-        private String [] dispKeys;
+        private String[] dispKeys;
         Spinner s1;
         Spinner s2;
         Spinner s3;
@@ -33,12 +37,14 @@ namespace VitaMote {
         Spinner s18;
         Spinner s19;
         Spinner s20;
-        protected override void OnCreate(Bundle savedInstanceState) {
+        protected override void OnCreate(Bundle savedInstanceState)
+        {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.Mapping);
             //It's stupid, but.. there is no other form right now
-            for (int i = 0; i < dk.Length; i++) {
-                allM.Add(dk [i]);
+            for (int i = 0; i < dk.Length; i++)
+            {
+                allM.Add(dk[i]);
             }
             //Key Strings (It was tedious to write them all >.<, there are some missed, but are not too interesting...) 
             this.dispKeys = new String[] {
@@ -89,118 +95,161 @@ namespace VitaMote {
             s18.Adapter = adapter;
             s19.Adapter = adapter;
             s20.Adapter = adapter;
-            loadCM();
-            butLo.Click += delegate {
-                setDefaults();
+            LoadCM();
+            butLo.Click += delegate
+            {
+                SetDefaults();
             };
-            butSa.Click += delegate { 
-                saveCM();
+            butSa.Click += delegate
+            {
+                SaveCM();
             };
         }
-        private void saveCM() {
-            string cmtxt = (int)allM [(int)s1.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s2.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s3.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s4.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s5.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s6.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s7.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s8.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s9.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s10.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s11.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s12.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s13.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s14.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s15.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s16.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s17.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s18.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s19.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s20.SelectedItemId];
-            Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
-            Java.IO.File dir = new Java.IO.File(sdCard.AbsolutePath + "/SonryVitaMote");
-            dir.Mkdirs();
-            Java.IO.File file = new Java.IO.File(dir, "cm.scf");
-            if (!file.Exists()) {
-                file.CreateNewFile();
-                file.Mkdir();
-                Java.IO.FileWriter writer = new Java.IO.FileWriter(file);
-                writer.Write(cmtxt);
-                writer.Flush();
-                writer.Close();
-            } else {
-                Java.IO.FileWriter writer = new Java.IO.FileWriter(file);
-                writer.Write(cmtxt);
-                writer.Flush();
-                writer.Close();
-                Toast.MakeText(this, "Successfully Saved", ToastLength.Long).Show();
-            }
-        }
+        private void SaveCM()
+        {
+            var cmFile = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "cm.scf");
+            StringBuilder sb = new StringBuilder();
 
-        public void loadCM() {
-            try {
-                int l = 0;
-                string line;
-                Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
-                Java.IO.File dir = new Java.IO.File(sdCard.AbsolutePath + "/SonryVitaMote");
-                Java.IO.File file = new Java.IO.File(dir, "cm.scf");
-                Java.IO.FileReader fread = new Java.IO.FileReader(file);
-                Java.IO.BufferedReader br = new Java.IO.BufferedReader(fread);
-                while ((line = br.ReadLine()) != null) {
-                    switch (l) {
-                        case 0:
-                            s1.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 1:
-                            s2.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 2:
-                            s3.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 3:
-                            s4.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 4:
-                            s5.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 5:
-                            s6.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 6:
-                            s7.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 7:
-                            s8.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 8:
-                            s9.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 9:
-                            s10.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 10:
-                            s11.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 11:
-                            s12.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 12:
-                            s13.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 13:
-                            s14.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 14:
-                            s15.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 15:
-                            s16.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 16:
-                            s17.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 17:
-                            s18.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 18:
-                            s19.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                        case 19:
-                            s20.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
-                            break;
-                    }
-                    l++;
-                }
-                fread.Close();
+            Spinner[] spinners = { s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16, s17, s18, s19, s20 };
+            foreach (var spinner in spinners)
+            {
+                sb.AppendLine(((int)allM[(int)spinner.SelectedItemId]).ToString());
             }
-            catch (Exception) {
-                setDefaults();
-                saveCM();
+
+            File.WriteAllText(cmFile, sb.ToString());
+
+            Toast.MakeText(this, "Successfully Saved", ToastLength.Long).Show();
+        }
+        //private void SaveCM() {
+        //    string cmtxt = (int)allM [(int)s1.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s2.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s3.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s4.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s5.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s6.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s7.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s8.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s9.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s10.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s11.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s12.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s13.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s14.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s15.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s16.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s17.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s18.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s19.SelectedItemId] + System.Environment.NewLine + (int)allM [(int)s20.SelectedItemId];
+        //    Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
+        //    Java.IO.File dir = new Java.IO.File(sdCard.AbsolutePath + "/SonryVitaMote");
+        //    dir.Mkdirs();
+        //    Java.IO.File file = new Java.IO.File(dir, "cm.scf");
+        //    if (!file.Exists()) {
+        //        file.CreateNewFile();
+        //        file.Mkdir();
+        //        Java.IO.FileWriter writer = new Java.IO.FileWriter(file);
+        //        writer.Write(cmtxt);
+        //        writer.Flush();
+        //        writer.Close();
+        //    } else {
+        //        Java.IO.FileWriter writer = new Java.IO.FileWriter(file);
+        //        writer.Write(cmtxt);
+        //        writer.Flush();
+        //        writer.Close();
+        //        Toast.MakeText(this, "Successfully Saved", ToastLength.Long).Show();
+        //    }
+        //}
+
+        public void LoadCM()
+        {
+            try
+            {
+                Spinner[] spinners = { s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16, s17, s18, s19, s20 };
+
+                var cmFile = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "cm.scf");
+
+                var lines = File.ReadAllLines(cmFile);
+
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    var line = lines[i];
+                    var spinner = spinners[i];
+
+                    spinner.SetSelection(allM.IndexOf((Keycode)int.Parse(line)));
+                }
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc);
+                SetDefaults();
+                SaveCM();
             }
         }
-        private void setDefaults() {
+        //public void LoadCM() {
+        //    try {
+        //        int l = 0;
+        //        string line;
+        //        Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
+        //        Java.IO.File dir = new Java.IO.File(sdCard.AbsolutePath + "/SonryVitaMote");
+        //        Java.IO.File file = new Java.IO.File(dir, "cm.scf");
+        //        Java.IO.FileReader fread = new Java.IO.FileReader(file);
+        //        Java.IO.BufferedReader br = new Java.IO.BufferedReader(fread);
+        //        while ((line = br.ReadLine()) != null) {
+        //            switch (l) {
+        //                case 0:
+        //                    s1.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 1:
+        //                    s2.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 2:
+        //                    s3.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 3:
+        //                    s4.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 4:
+        //                    s5.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 5:
+        //                    s6.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 6:
+        //                    s7.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 7:
+        //                    s8.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 8:
+        //                    s9.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 9:
+        //                    s10.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 10:
+        //                    s11.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 11:
+        //                    s12.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 12:
+        //                    s13.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 13:
+        //                    s14.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 14:
+        //                    s15.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 15:
+        //                    s16.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 16:
+        //                    s17.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 17:
+        //                    s18.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 18:
+        //                    s19.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //                case 19:
+        //                    s20.SetSelection(allM.IndexOf((Keycode)Java.Lang.Integer.ParseInt(line)));
+        //                    break;
+        //            }
+        //            l++;
+        //        }
+        //        fread.Close();
+        //    }
+        //    catch (Exception) {
+        //        setDefaults();
+        //        SaveCM();
+        //    }
+        //}
+        private void SetDefaults()
+        {
             //Default Keys if you want to back
             s1.SetSelection(allM.IndexOf(Keycode.DpadUp));
             s2.SetSelection(allM.IndexOf(Keycode.DpadRight));
@@ -223,6 +272,5 @@ namespace VitaMote {
             s19.SetSelection(allM.IndexOf(Keycode.K));
             s20.SetSelection(allM.IndexOf(Keycode.J));
         }
-
     }
 }

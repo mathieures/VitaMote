@@ -7,7 +7,7 @@ using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
 using Java.Lang;
-using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using static Android.InputMethodServices.KeyboardView;
@@ -115,93 +115,29 @@ namespace VitaMote
         Android.Views.Keycode aRr = Android.Views.Keycode.L;
 
         //Custom Mapping System
-        public void loadCM()
+        public void LoadCM()
         {
             try
             {
-                int l = 0;
-                string line;
-                Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
-                Java.IO.File dir = new Java.IO.File(sdCard.AbsolutePath + "/SonryVitaMote");
-                Java.IO.File file = new Java.IO.File(dir, "cm.scf");
-                Java.IO.FileReader fread = new Java.IO.FileReader(file);
-                Java.IO.BufferedReader br = new Java.IO.BufferedReader(fread);
-                while ((line = br.ReadLine()) != null)
+                Android.Views.Keycode[] buttons = { bUp, bRi, bDo, bLe, bLt, bRt, bX, bC, bT, bS, bSe, bSt, aLu, aLd, aLl, aLr, aRu, aRd, aRl, aRr };
+
+                var cmFile = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "cm.scf");
+
+                var lines = File.ReadAllLines(cmFile);
+
+                for (int i = 0; i < lines.Length; i++)
                 {
-                    switch (l)
-                    {
-                        case 0:
-                            bUp = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 1:
-                            bRi = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 2:
-                            bDo = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 3:
-                            bLe = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 4:
-                            bLt = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 5:
-                            bRt = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 6:
-                            bX = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 7:
-                            bC = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 8:
-                            bT = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 9:
-                            bS = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 10:
-                            bSe = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 11:
-                            bSt = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 12:
-                            aLu = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 13:
-                            aLd = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 14:
-                            aLl = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 15:
-                            aLr = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 16:
-                            aRu = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 17:
-                            aRd = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 18:
-                            aRl = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                        case 19:
-                            aRr = (Android.Views.Keycode)Integer.ParseInt(line);
-                            break;
-                    }
-                    l++;
+                    var line = lines[i];
+                    var button = buttons[i];
+
+                    button = (Android.Views.Keycode)int.Parse(line);
                 }
-                fread.Close();
             }
             catch (System.Exception ex)
             {
                 Log.Verbose("{1}", ex.ToString());
 
             }
-
-
         }
 
 
@@ -227,7 +163,7 @@ namespace VitaMote
                 case (int)Android.Views.Keycode.Button9:
                     try
                     {
-                        onREC();
+                        OnREC();
                     }
                     catch (System.Exception ex)
                     {
@@ -285,50 +221,57 @@ namespace VitaMote
         public override void OnCreate()
         {
             base.OnCreate();
-            loadCM();
-            timer = true;
-            Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
-            Java.IO.File dir = new Java.IO.File(sdCard.AbsolutePath + "/SonryVitaMote");
-            Java.IO.File file = new Java.IO.File(dir, "ip.scf");
-            Java.IO.FileReader fread = new Java.IO.FileReader(file);
-            Java.IO.BufferedReader br = new Java.IO.BufferedReader(fread);
-            string ip = br.ReadLine();
-            fread.Close();
-            try
-            {
-                clientSocket.Connect(ip, 5000);
-                if (clientSocket.Connected)
-                {
-                    Toast.MakeText(this, "PS VITA Connected", ToastLength.Long).Show();
-                    RunUpdateLoop();
-                }
-                else
-                {
-                    Toast.MakeText(this, "Couldn't connect", ToastLength.Long).Show();
-                }
+            LoadCM();
 
-            }
-            catch (System.Exception ex)
-            {
-                Toast.MakeText(this, "Network Error, try again", ToastLength.Long).Show();
-                Log.Info("Exception: ", ex.ToString());
-            }
+            OnREC();
+
+            //timer = true;
+            //Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
+            //Java.IO.File dir = new Java.IO.File(sdCard.AbsolutePath + "/SonryVitaMote");
+            //Java.IO.File file = new Java.IO.File(dir, "ip.scf");
+            //Java.IO.FileReader fread = new Java.IO.FileReader(file);
+            //Java.IO.BufferedReader br = new Java.IO.BufferedReader(fread);
+            //string ip = br.ReadLine();
+            //fread.Close();
+            //try
+            //{
+            //    clientSocket.Connect(ip, 5000);
+            //    if (clientSocket.Connected)
+            //    {
+            //        Toast.MakeText(this, "PS VITA Connected", ToastLength.Long).Show();
+            //        RunUpdateLoop();
+            //    }
+            //    else
+            //    {
+            //        Toast.MakeText(this, "Couldn't connect", ToastLength.Long).Show();
+            //    }
+
+            //}
+            //catch (System.Exception ex)
+            //{
+            //    Toast.MakeText(this, "Network Error, try again", ToastLength.Long).Show();
+            //    Log.Info("Exception: ", ex.ToString());
+            //}
 
 
         }
-        public void onREC()
+        public void OnREC()
         {
             timer = true;
-            Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
-            Java.IO.File dir = new Java.IO.File(sdCard.AbsolutePath + "/SonryVitaMote");
-            Java.IO.File file = new Java.IO.File(dir, "ip.scf");
-            Java.IO.FileReader fread = new Java.IO.FileReader(file);
-            Java.IO.BufferedReader br = new Java.IO.BufferedReader(fread);
-            string ip = br.ReadLine();
-            fread.Close();
+
+            string ip = Xamarin.Essentials.Preferences.Get("ip", null);
+            int port;
+            if (ip.Contains(':'))
+            {
+                port = int.Parse(ip.Split(':')[1]);
+                ip = ip.Split(":")[0];
+            }
+            else
+                port = 5000;
+
             try
             {
-                clientSocket.Connect(ip, 5000);
+                clientSocket.Connect(ip, port);
                 if (clientSocket.Connected)
                 {
                     Toast.MakeText(this, "PS VITA Connected", ToastLength.Long).Show();
@@ -338,7 +281,6 @@ namespace VitaMote
                 {
                     Toast.MakeText(this, "Couldn't Connect", ToastLength.Long).Show();
                 }
-
             }
             catch (System.Exception ex)
             {
