@@ -7,7 +7,9 @@ using Xamarin.Essentials;
 namespace VitaMote {
     [Activity(Label = "VitaMote", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainActivity : Activity {
-        TextView label1;
+
+        TextView ipTextView;
+
         protected override void OnCreate(Bundle bundle) {
             base.OnCreate(bundle);
 
@@ -15,30 +17,38 @@ namespace VitaMote {
 
             SetContentView(Resource.Layout.Main);
 
-            Button button = FindViewById<Button>(Resource.Id.MyButton);
-            Button btnime = FindViewById<Button>(Resource.Id.btnIME);
-            Button btnmap = FindViewById<Button>(Resource.Id.btnMap);
-            EditText text1 = FindViewById<EditText>(Resource.Id.editText1);
-            label1 = FindViewById<TextView>(Resource.Id.textView7);
-            label1.Text=ReFile();
-            button.Click+=delegate {
-                SaveFl(text1.Text);
-                label1.Text=ReFile();
+            Button saveButton = FindViewById<Button>(Resource.Id.saveIpBtn);
+            Button changeIMEButton = FindViewById<Button>(Resource.Id.changeIMEBtn);
+            Button customMappingButton = FindViewById<Button>(Resource.Id.customMappingBtn);
+            EditText ipEditText = FindViewById<EditText>(Resource.Id.ipEditText);
+            
+            ipTextView = FindViewById<TextView>(Resource.Id.savedIPTextView);
+            ipTextView.Text = GetSavedIP();
+            
+            saveButton.Click += delegate
+            {
+                SaveIP(ipEditText.Text);
+                ipTextView.Text = GetSavedIP();
             };
-            btnime.Click += delegate {
+
+            // Show the IME picker on click
+            changeIMEButton.Click += delegate {
                 InputMethodManager imeManager = (InputMethodManager)GetSystemService(InputMethodService);
                 imeManager.ShowInputMethodPicker();
             };
-            btnmap.Click += delegate {
-                StartActivity(typeof(CusMap));           
-                };
-        }
 
-        private void SaveFl(string texto) {
-            Preferences.Set("ip", texto);
+            // Show the custom mapping configuration on click
+            customMappingButton.Click += delegate {
+                StartActivity(typeof(CusMap));
+            };
+        }
+        private void SaveIP(string ip)
+        {
+            Preferences.Set("ip", ip);
             Toast.MakeText(this, "Successfully Saved", ToastLength.Long).Show();
         }
-        private string ReFile() {
+        private string GetSavedIP()
+        {
             var ip = Preferences.Get("ip", null);
             if (ip == null)
             {

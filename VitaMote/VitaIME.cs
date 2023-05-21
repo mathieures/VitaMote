@@ -114,7 +114,20 @@ namespace VitaMote
         Android.Views.Keycode aRl = Android.Views.Keycode.J;
         Android.Views.Keycode aRr = Android.Views.Keycode.L;
 
-        //Custom Mapping System
+        bool timer = false;
+
+        public override void OnCreate()
+        {
+            base.OnCreate();
+
+            // Load custom mapping
+            LoadCM();
+
+            // Connect to the PSVita
+            OnREC();
+        }
+        
+        // Load current custom mapping and display it on the screen
         public void LoadCM()
         {
             try
@@ -145,21 +158,26 @@ namespace VitaMote
 
         public void OnKey([GeneratedEnum] Android.Views.Keycode primaryCode, [GeneratedEnum] Android.Views.Keycode[] keyCodes)
         {
+            // The connection between the keyboard and this app
             IInputConnection ic = CurrentInputConnection;
+
             switch ((int)primaryCode)
             {
                 case (int)Android.Views.Keycode.Del:
                     //ic.SendKeyEvent(new KeyEvent(KeyEventActions.Down,Android.Views.Keycode.Del));
                     ic.DeleteSurroundingText(1, 0);
                     break;
+
                 case -1:
                     caps = !caps;
                     keyboard.SetShifted(caps);
                     kv.InvalidateAllKeys();
                     break;
+
                 case (int)Android.Views.Keycode.Enter:
                     ic.SendKeyEvent(new KeyEvent(KeyEventActions.Down, Android.Views.Keycode.Enter));
                     break;
+
                 case (int)Android.Views.Keycode.Button9:
                     try
                     {
@@ -172,17 +190,20 @@ namespace VitaMote
                     }
 
                     break;
+
+                // If it is a normal character, then make it upper and send it
                 default:
                     char code = (char)primaryCode;
-                    if (Character.IsLetter(code) && caps)
+                    if (char.IsLetter(code) && caps)
                     {
-                        code = Character.ToUpperCase(code);
+                        code = char.ToUpper(code);
                     }
-                    ic.CommitText(Java.Lang.String.ValueOf(code), 1);
+                    ic.CommitText(code.ToString(), 1);
                     break;
             }
         }
-        //This part of the code are useless, but there is no form to continue without this part of the code
+
+        //This part of the code is useless, but there is no way to continue without it
         public void OnPress([GeneratedEnum] Android.Views.Keycode primaryCode)
         {
             //OnKey(primaryCode);
@@ -259,12 +280,14 @@ namespace VitaMote
         {
             timer = true;
 
-            string ip = Xamarin.Essentials.Preferences.Get("ip", null);
-            int port;
+            string ip = Xamarin.Essentials.Preferences.Get("ip", null) ?? throw new Exception("The IP cannot be empty");
+            int port = 5000;
+            
+            // Change the port in case it is specified
             if (ip.Contains(':'))
             {
                 port = int.Parse(ip.Split(':')[1]);
-                ip = ip.Split(":")[0];
+                ip = ip.Split(':')[0];
             }
             else
                 port = 5000;
@@ -291,7 +314,6 @@ namespace VitaMote
         //public override void OnDestroy()
         //{
         //    base.OnDestroy();
-
         //}
         public override View OnCreateInputView()
         {

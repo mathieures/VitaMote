@@ -10,7 +10,7 @@
         android:text="@string/DefaultIP"
         android:inputType="text" />
     <Button
-        android:id="@+id/MyButton"
+        android:id="@+id/saveIpBtn"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/SaveIPText" />
@@ -55,15 +55,15 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView7" />
+        android:id="@+id/savedIPTextView" />
     <Button
         android:text="@string/changeIME"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/btnIME" />
+        android:id="@+id/changeIMEBtn" />
     <Button
         android:text="@string/customMapping"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/btnMap" />
+        android:id="@+id/customMappingBtn" />
 </LinearLayout>
