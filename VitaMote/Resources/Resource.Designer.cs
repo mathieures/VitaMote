@@ -978,29 +978,32 @@ namespace VitaMote
 			// aapt resource value: 0x7F080000
 			public const int ApplicationName = 2131230720;
 			
-			// aapt resource value: 0x7F080002
-			public const int copy_toast_msg = 2131230722;
-			
 			// aapt resource value: 0x7F080003
-			public const int fallback_menu_item_copy_link = 2131230723;
-			
-			// aapt resource value: 0x7F080004
-			public const int fallback_menu_item_open_in_browser = 2131230724;
-			
-			// aapt resource value: 0x7F080005
-			public const int fallback_menu_item_share_link = 2131230725;
+			public const int copy_toast_msg = 2131230723;
 			
 			// aapt resource value: 0x7F080001
-			public const int Hello = 2131230721;
+			public const int DefaultIP = 2131230721;
+			
+			// aapt resource value: 0x7F080004
+			public const int fallback_menu_item_copy_link = 2131230724;
+			
+			// aapt resource value: 0x7F080005
+			public const int fallback_menu_item_open_in_browser = 2131230725;
 			
 			// aapt resource value: 0x7F080006
-			public const int rem_ime = 2131230726;
+			public const int fallback_menu_item_share_link = 2131230726;
 			
 			// aapt resource value: 0x7F080007
-			public const int status_bar_notification_info_overflow = 2131230727;
+			public const int rem_ime = 2131230727;
+			
+			// aapt resource value: 0x7F080002
+			public const int SaveIPText = 2131230722;
 			
 			// aapt resource value: 0x7F080008
-			public const int subtype_en_US = 2131230728;
+			public const int status_bar_notification_info_overflow = 2131230728;
+			
+			// aapt resource value: 0x7F080009
+			public const int subtype_en_US = 2131230729;
 			
 			static String()
 			{
