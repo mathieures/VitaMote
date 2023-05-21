@@ -2,14 +2,17 @@
 using Android.Widget;
 using Android.OS;
 using Android.Views.InputMethods;
+using Xamarin.Essentials;
 
 namespace VitaMote {
-    [Activity(Label = "VitaMote", MainLauncher = true, Icon = "@drawable/icon", Exported = true)]
+    [Activity(Label = "VitaMote", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainActivity : Activity {
         TextView label1;
         protected override void OnCreate(Bundle bundle) {
             base.OnCreate(bundle);
-            
+
+            Platform.Init(this, bundle);
+
             SetContentView(Resource.Layout.Main);
 
             Button button = FindViewById<Button>(Resource.Id.MyButton);
@@ -17,10 +20,10 @@ namespace VitaMote {
             Button btnmap = FindViewById<Button>(Resource.Id.btnMap);
             EditText text1 = FindViewById<EditText>(Resource.Id.editText1);
             label1 = FindViewById<TextView>(Resource.Id.textView7);
-            label1.Text=reFile();
+            label1.Text=ReFile();
             button.Click+=delegate {
-                saveFl(text1.Text);
-                label1.Text=reFile();
+                SaveFl(text1.Text);
+                label1.Text=ReFile();
             };
             btnime.Click += delegate {
                 InputMethodManager imeManager = (InputMethodManager)GetSystemService(InputMethodService);
@@ -31,44 +34,18 @@ namespace VitaMote {
                 };
         }
 
-        private void saveFl(string texto) {
-            Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
-            Java.IO.File dir = new Java.IO.File(sdCard.AbsolutePath+"/SonryVitaMote");
-            dir.Mkdirs();
-            Java.IO.File file = new Java.IO.File(dir, "ip.scf");
-            if (!file.Exists()) {
-                file.CreateNewFile();
-                file.Mkdir();
-                Java.IO.FileWriter writer = new Java.IO.FileWriter(file);
-                writer.Write(texto);
-                writer.Flush();
-                writer.Close();
-                Toast.MakeText(this, "Successfully Saved", ToastLength.Long).Show();
-            }
-            else {
-                Java.IO.FileWriter writer = new Java.IO.FileWriter(file);
-                writer.Write(texto);
-                writer.Flush();
-                writer.Close();
-                Toast.MakeText(this, "Successfully Edited", ToastLength.Long).Show();
-            }
+        private void SaveFl(string texto) {
+            Preferences.Set("ip", texto);
+            Toast.MakeText(this, "Successfully Saved", ToastLength.Long).Show();
         }
-        private string reFile() {
-            Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
-            Java.IO.File dir = new Java.IO.File(sdCard.AbsolutePath+"/SonryVitaMote");
-            Java.IO.File file = new Java.IO.File(dir, "ip.scf");
-            if (!file.Exists()) {
+        private string ReFile() {
+            var ip = Preferences.Get("ip", null);
+            if (ip == null)
+            {
                 Toast.MakeText(this, "Remember to store an IP", ToastLength.Long).Show();
                 return "No IP Saved";
             }
-            else {
-                Java.IO.FileReader fread = new Java.IO.FileReader(file);
-                Java.IO.BufferedReader br = new Java.IO.BufferedReader(fread);
-                string ip = br.ReadLine();
-                fread.Close();
-                return ip;
-            }
-               
+            return ip;
         }
     }
 }
