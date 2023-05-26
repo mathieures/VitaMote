@@ -21,24 +21,39 @@ namespace VitaMote {
             Button changeIMEButton = FindViewById<Button>(Resource.Id.changeIMEBtn);
             Button customMappingButton = FindViewById<Button>(Resource.Id.customMappingBtn);
             EditText ipEditText = FindViewById<EditText>(Resource.Id.ipEditText);
-            
+
             ipTextView = FindViewById<TextView>(Resource.Id.savedIPTextView);
-            ipTextView.Text = GetSavedIP();
-            
+
+            // If no IP was saved or if it is empty, set the text to the default IP
+            var ip = GetSavedIP();
+            if (ip == null || ip == "")
+            {
+                Toast.MakeText(this, "Remember to store an IP", ToastLength.Long).Show();
+                ipTextView.Text = "No IP Saved";
+            }
+            else
+            {
+                ipEditText.Text = ip;
+                ipTextView.Text = ipEditText.Text;
+            }
+
+            // On click, save the IP
             saveButton.Click += delegate
             {
                 SaveIP(ipEditText.Text);
-                ipTextView.Text = GetSavedIP();
+                ipTextView.Text = ipEditText.Text;
             };
 
-            // Show the IME picker on click
-            changeIMEButton.Click += delegate {
+            // On click, show the IME picker
+            changeIMEButton.Click += delegate
+            {
                 InputMethodManager imeManager = (InputMethodManager)GetSystemService(InputMethodService);
                 imeManager.ShowInputMethodPicker();
             };
 
-            // Show the custom mapping configuration on click
-            customMappingButton.Click += delegate {
+            // On click, show the custom mapping configuration page
+            customMappingButton.Click += delegate
+            {
                 StartActivity(typeof(CusMap));
             };
         }
@@ -49,13 +64,7 @@ namespace VitaMote {
         }
         private string GetSavedIP()
         {
-            var ip = Preferences.Get("ip", null);
-            if (ip == null)
-            {
-                Toast.MakeText(this, "Remember to store an IP", ToastLength.Long).Show();
-                return "No IP Saved";
-            }
-            return ip;
+            return Preferences.Get("ip", null);
         }
     }
 }

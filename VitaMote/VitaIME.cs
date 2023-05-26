@@ -19,28 +19,33 @@ namespace VitaMote
     [IntentFilter(new[] { "android.view.InputMethod" })]
     class VitaIME : InputMethodService, IOnKeyboardActionListener
     {
-        readonly System.Net.Sockets.TcpClient clientSocket = new System.Net.Sockets.TcpClient();
+        // Network object used to receive input
+        readonly TcpClient clientSocket = new TcpClient();
+
         private KeyboardView kv;
         private Keyboard keyboard;
         private bool caps = false;
+        
+        // Connection between the input method and the running application
         IInputConnection ic;
-        //Buttons
+
+        // Buttons
         int b1, b2, b3, b4, b5, b6, b7, b8;
-        //int b1, b2, b3, b4, b5, b6, b7, b8, b9;
-        //Type 1
+        // int b1, b2, b3, b4, b5, b6, b7, b8, b9;
+        // Type 1
         const int btnL = 128;
-        const int btnR = 32;
         const int btnD = 64;
+        const int btnR = 32;
         const int btnU = 16;
-        const int btnSel = 1;
         const int btnSta = 8;
-        //Combos
-        //Dpad Combos
+        const int btnSel = 1;
+        // Combos
+        // Dpad Combos
         const int btnLU = btnL + btnU;
         const int btnLD = btnL + btnD;
         const int btnRU = btnR + btnU;
         const int btnRD = btnR + btnD;
-        //Dpad + Sel or Sta
+        // Dpad + Sel or Sta
         const int btnUSt = btnU + btnSta;
         const int btnUSe = btnU + btnSel;
         const int btnDSt = btnD + btnSta;
@@ -50,7 +55,7 @@ namespace VitaMote
         const int btnRSt = btnR + btnSta;
         const int btnRSe = btnR + btnSel;
         const int btnSeSt = btnSel + btnSta;
-        //Triple Combo (Dpad Combo + Sta)
+        // Triple Combo (Dpad Combo + Sta)
         const int btnLUSt = btnLU + btnSta;
         const int btnLUSe = btnLU + btnSel;
         const int btnLDSt = btnLD + btnSta;
@@ -59,16 +64,16 @@ namespace VitaMote
         const int btnRUSe = btnRU + btnSel;
         const int btnRDSt = btnRD + btnSta;
         const int btnRDSe = btnRD + btnSel;
-        //Type 2
+        // Type 2
+        const int btnS = 128;
         const int btnX = 64;
         const int btnC = 32;
         const int btnT = 16;
-        const int btnS = 128;
-        const int btnLt = 1;
         const int btnRt = 2;
-        //Double Combo
-        const int btnXC = btnX + btnC;
+        const int btnLt = 1;
+        // Double Combo
         const int btnXS = btnX + btnS;
+        const int btnXC = btnX + btnC;
         const int btnCT = btnC + btnT;
         const int btnTS = btnT + btnS;
         const int btnXLt = btnX + btnLt;
@@ -80,41 +85,43 @@ namespace VitaMote
         const int btnTRt = btnT + btnRt;
         const int btnSRt = btnS + btnRt;
         const int btnLR = btnLt + btnRt;
-        //Triple Combo (L+R+XTCS)
+        // Triple Combo (L+R+XTCS)
         const int btnLRC = btnLt + btnRt + btnC;
         const int btnLRS = btnLt + btnRt + btnS;
         const int btnLRT = btnLt + btnRt + btnT;
         const int btnLRX = btnLt + btnRt + btnX;
-        //Keys (Custom Mapping Soon!)
-        //DPAD
-        Android.Views.Keycode bUp = Android.Views.Keycode.DpadUp;
-        Android.Views.Keycode bDo = Android.Views.Keycode.DpadDown;
-        Android.Views.Keycode bLe = Android.Views.Keycode.DpadLeft;
-        Android.Views.Keycode bRi = Android.Views.Keycode.DpadRight;
-        //L-R Triggers
-        Android.Views.Keycode bLt = Android.Views.Keycode.ButtonL1;
-        Android.Views.Keycode bRt = Android.Views.Keycode.ButtonR1;
-        //XCTS
-        Android.Views.Keycode bX = Android.Views.Keycode.ButtonA;
-        Android.Views.Keycode bC = Android.Views.Keycode.ButtonB;
-        Android.Views.Keycode bT = Android.Views.Keycode.ButtonY;
-        Android.Views.Keycode bS = Android.Views.Keycode.ButtonX;
-        //SEL-STA
-        Android.Views.Keycode bSe = Android.Views.Keycode.DpadCenter;
-        Android.Views.Keycode bSt = Android.Views.Keycode.Back;
-        //Analogs
-        //LEFT
-        Android.Views.Keycode aLu = Android.Views.Keycode.W;
-        Android.Views.Keycode aLd = Android.Views.Keycode.S;
-        Android.Views.Keycode aLl = Android.Views.Keycode.A;
-        Android.Views.Keycode aLr = Android.Views.Keycode.D;
-        //RIGHT
-        Android.Views.Keycode aRu = Android.Views.Keycode.I;
-        Android.Views.Keycode aRd = Android.Views.Keycode.K;
-        Android.Views.Keycode aRl = Android.Views.Keycode.J;
-        Android.Views.Keycode aRr = Android.Views.Keycode.L;
 
-        bool timer = false;
+        // Input to keycode conversions
+        
+        // DPAD
+        readonly Android.Views.Keycode bUp = Android.Views.Keycode.DpadUp;
+        readonly Android.Views.Keycode bDo = Android.Views.Keycode.DpadDown;
+        readonly Android.Views.Keycode bLe = Android.Views.Keycode.DpadLeft;
+        readonly Android.Views.Keycode bRi = Android.Views.Keycode.DpadRight;
+        // L-R Triggers
+        readonly Android.Views.Keycode bLt = Android.Views.Keycode.ButtonL1;
+        readonly Android.Views.Keycode bRt = Android.Views.Keycode.ButtonR1;
+        // XCTS
+        readonly Android.Views.Keycode bX = Android.Views.Keycode.ButtonA;
+        readonly Android.Views.Keycode bC = Android.Views.Keycode.ButtonB;
+        readonly Android.Views.Keycode bT = Android.Views.Keycode.ButtonY;
+        readonly Android.Views.Keycode bS = Android.Views.Keycode.ButtonX;
+        // SEL-STA
+        readonly Android.Views.Keycode bSe = Android.Views.Keycode.DpadCenter;
+        readonly Android.Views.Keycode bSt = Android.Views.Keycode.Back;
+        // Analog sticks
+        // LEFT
+        readonly Android.Views.Keycode aLu = Android.Views.Keycode.W;
+        readonly Android.Views.Keycode aLd = Android.Views.Keycode.S;
+        readonly Android.Views.Keycode aLl = Android.Views.Keycode.A;
+        readonly Android.Views.Keycode aLr = Android.Views.Keycode.D;
+        // RIGHT
+        readonly Android.Views.Keycode aRu = Android.Views.Keycode.I;
+        readonly Android.Views.Keycode aRd = Android.Views.Keycode.K;
+        readonly Android.Views.Keycode aRl = Android.Views.Keycode.J;
+        readonly Android.Views.Keycode aRr = Android.Views.Keycode.L;
+
+        bool running = false;
 
         public override void OnCreate()
         {
@@ -124,10 +131,10 @@ namespace VitaMote
             LoadCM();
 
             // Connect to the PSVita
-            OnREC();
+            Connect();
         }
         
-        // Load current custom mapping and display it on the screen
+        // Load current custom mapping and display it onto the screen
         public void LoadCM()
         {
             try
@@ -149,13 +156,10 @@ namespace VitaMote
             catch (System.Exception ex)
             {
                 Log.Verbose("{1}", ex.ToString());
-
             }
         }
-
-
-        bool timer = false;
-
+        
+        // Called when a key is pressed on the custom keyboard (?)
         public void OnKey([GeneratedEnum] Android.Views.Keycode primaryCode, [GeneratedEnum] Android.Views.Keycode[] keyCodes)
         {
             // The connection between the keyboard and this app
@@ -178,32 +182,32 @@ namespace VitaMote
                     ic.SendKeyEvent(new KeyEvent(KeyEventActions.Down, Android.Views.Keycode.Enter));
                     break;
 
-                case (int)Android.Views.Keycode.Button9:
+                case (int)Android.Views.Keycode.Button9: // Left analog stick pushed in (L3)
                     try
                     {
-                        OnREC();
+                        Connect();
                     }
                     catch (System.Exception ex)
                     {
-                        Toast.MakeText(this, "PSVITA Connected", ToastLength.Long).Show();
+                        // TODO: why this message (?)
+                        // Toast.MakeText(this, "PSVITA Connected", ToastLength.Long).Show();
                         Log.Info("Exception: ", ex.ToString());
                     }
-
                     break;
 
-                // If it is a normal character, then make it upper and send it
+                // If it is a normal character, then make it upper and send it (?)
                 default:
                     char code = (char)primaryCode;
+
                     if (char.IsLetter(code) && caps)
-                    {
                         code = char.ToUpper(code);
-                    }
+
                     ic.CommitText(code.ToString(), 1);
                     break;
             }
         }
 
-        //This part of the code is useless, but there is no way to continue without it
+        // This part of the code is useless, but there is no way to continue without it (?)
         public void OnPress([GeneratedEnum] Android.Views.Keycode primaryCode)
         {
             //OnKey(primaryCode);
@@ -239,48 +243,13 @@ namespace VitaMote
         {
             //  throw new NotImplementedException();
         }
-        public override void OnCreate()
+
+        // Connect to the PSVita and start listening for input
+        public void Connect()
         {
-            base.OnCreate();
-            LoadCM();
+            running = true;
 
-            OnREC();
-
-            //timer = true;
-            //Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
-            //Java.IO.File dir = new Java.IO.File(sdCard.AbsolutePath + "/SonryVitaMote");
-            //Java.IO.File file = new Java.IO.File(dir, "ip.scf");
-            //Java.IO.FileReader fread = new Java.IO.FileReader(file);
-            //Java.IO.BufferedReader br = new Java.IO.BufferedReader(fread);
-            //string ip = br.ReadLine();
-            //fread.Close();
-            //try
-            //{
-            //    clientSocket.Connect(ip, 5000);
-            //    if (clientSocket.Connected)
-            //    {
-            //        Toast.MakeText(this, "PS VITA Connected", ToastLength.Long).Show();
-            //        RunUpdateLoop();
-            //    }
-            //    else
-            //    {
-            //        Toast.MakeText(this, "Couldn't connect", ToastLength.Long).Show();
-            //    }
-
-            //}
-            //catch (System.Exception ex)
-            //{
-            //    Toast.MakeText(this, "Network Error, try again", ToastLength.Long).Show();
-            //    Log.Info("Exception: ", ex.ToString());
-            //}
-
-
-        }
-        public void OnREC()
-        {
-            timer = true;
-
-            string ip = Xamarin.Essentials.Preferences.Get("ip", null) ?? throw new Exception("The IP cannot be empty");
+            string ip = Xamarin.Essentials.Preferences.Get("ip", null) ?? throw new System.Exception("The IP cannot be empty");
             int port = 5000;
             
             // Change the port in case it is specified
@@ -289,21 +258,17 @@ namespace VitaMote
                 port = int.Parse(ip.Split(':')[1]);
                 ip = ip.Split(':')[0];
             }
-            else
-                port = 5000;
 
             try
             {
                 clientSocket.Connect(ip, port);
-                if (clientSocket.Connected)
-                {
-                    Toast.MakeText(this, "PS VITA Connected", ToastLength.Long).Show();
-                    RunUpdateLoop();
-                }
-                else
+                if (!clientSocket.Connected)
                 {
                     Toast.MakeText(this, "Couldn't Connect", ToastLength.Long).Show();
+                    return;
                 }
+                Toast.MakeText(this, "PS VITA Connected", ToastLength.Long).Show();
+                RunUpdateLoop();
             }
             catch (System.Exception ex)
             {
@@ -315,6 +280,8 @@ namespace VitaMote
         //{
         //    base.OnDestroy();
         //}
+
+        // Called when the custom keyboard is requested to appear
         public override View OnCreateInputView()
         {
             kv = (KeyboardView)LayoutInflater.Inflate(Resource.Layout.keyboard, null);
@@ -324,11 +291,11 @@ namespace VitaMote
             return kv;
         }
 
-
+        // Listen for input
         private async void RunUpdateLoop()
         {
             NetworkStream serverStream = clientSocket.GetStream();
-            while (timer)
+            while (running)
             {
                 try
                 {
@@ -336,534 +303,507 @@ namespace VitaMote
                     byte[] outStream = System.Text.Encoding.ASCII.GetBytes("request");
                     serverStream.Write(outStream, 0, outStream.Length);
                     serverStream.Flush();
-                    b1 = serverStream.ReadByte();//DPAD + SEL + STA
-                    b2 = serverStream.ReadByte();//XCTS + LT + RT
-                    b3 = serverStream.ReadByte();//NOT USED
-                    b4 = serverStream.ReadByte();//NOT USED
-                    b5 = serverStream.ReadByte();//L ANALOG X DATA
-                    b6 = serverStream.ReadByte();//L ANALOG Y DATA
-                    b7 = serverStream.ReadByte();//R ANALOG X DATA
-                    b8 = serverStream.ReadByte();//R ANLAOG Y DATA
+                    b1 = serverStream.ReadByte(); // DPAD + SEL + STA
+                    b2 = serverStream.ReadByte(); // XCTS + LT + RT // Cross (X), Circle, Triangle, Square
+                    b3 = serverStream.ReadByte(); // NOT USED
+                    b4 = serverStream.ReadByte(); // NOT USED
+                    b5 = serverStream.ReadByte(); // L ANALOG X DATA
+                    b6 = serverStream.ReadByte(); // L ANALOG Y DATA
+                    b7 = serverStream.ReadByte(); // R ANALOG X DATA
+                    b8 = serverStream.ReadByte(); // R ANALOG Y DATA
+
                     byte[] inStream = new byte[clientSocket.ReceiveBufferSize];
                     serverStream.Read(inStream, 0, (int)clientSocket.ReceiveBufferSize);
-                    //b9 = BitConverter.ToInt32(inStream, 0);//TOUCHSCREEN DATA (Not Used Yet)
-                    keySystem(b1, b2, b3, b4, b5, b6, b7, b8);
+                    // b9 = BitConverter.ToInt32(inStream, 0); // TOUCHSCREEN DATA (Not Used Yet)
+                    ParseInput(b1, b2, b3, b4, b5, b6, b7, b8);
                 }
                 catch (System.Exception ex)
                 {
                     Toast.MakeText(this, "PSVITA Disconnected", ToastLength.Long).Show();
                     Log.Info("Exception: ", ex.ToString());
-                    timer = false;
+                    running = false;
                 }
             }
         }
-        private void keySystem(int a, int b, int c, int d, int e, int f, int g, int h)
+
+        private void ParseInput(int a, int b, int c, int d, int e, int f, int g, int h)
         {
             ic = CurrentInputConnection;
-            //DPAD + SEL STA
+            KeyEvent ks, kd, ka;
+
+            // DPAD + SEL STA
+
+            // Up
             if (a == btnU)
-            {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bUp);
-                ic.SendKeyEvent(ks);
-            }
+                ks = new KeyEvent(KeyEventActions.Down, bUp);
             else
-            {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Up, bUp);
-                ic.SendKeyEvent(ks);
-            }
+                ks = new KeyEvent(KeyEventActions.Up, bUp);
+
+            ic.SendKeyEvent(ks);
+            
+            // Right
             if (a == btnR)
-            {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bRi);
-                ic.SendKeyEvent(ks);
-            }
+                ks = new KeyEvent(KeyEventActions.Down, bRi);
             else
-            {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Up, bRi);
-                ic.SendKeyEvent(ks);
-            }
+                ks = new KeyEvent(KeyEventActions.Up, bRi);
+
+            ic.SendKeyEvent(ks);
+            
+            // Down
             if (a == btnD)
-            {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bDo);
-                ic.SendKeyEvent(ks);
-            }
+                ks = new KeyEvent(KeyEventActions.Down, bDo);
             else
-            {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Up, bDo);
-                ic.SendKeyEvent(ks);
-            }
+                ks = new KeyEvent(KeyEventActions.Up, bDo);
+
+            ic.SendKeyEvent(ks);
+            
+            // Left
             if (a == btnL)
-            {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLe);
-                ic.SendKeyEvent(ks);
-            }
+                ks = new KeyEvent(KeyEventActions.Down, bLe);
             else
-            {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Up, bLe);
-                ic.SendKeyEvent(ks);
-            }
+                ks = new KeyEvent(KeyEventActions.Up, bLe);
+
+            ic.SendKeyEvent(ks);
+            
+            // Select
             if (a == btnSel)
-            {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bSe);
-                ic.SendKeyEvent(ks);
-            }
+                ks = new KeyEvent(KeyEventActions.Down, bSe);
             else
-            {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Up, bSe);
-                ic.SendKeyEvent(ks);
-            }
+                ks = new KeyEvent(KeyEventActions.Up, bSe);
+
+            ic.SendKeyEvent(ks);
+            
+            // Start
             if (a == btnSta)
-            {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bSt);
-                ic.SendKeyEvent(ks);
-            }
+                ks = new KeyEvent(KeyEventActions.Down, bSt);
             else
-            {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Up, bSt);
-                ic.SendKeyEvent(ks);
-            }
-            //Combos (Dpad & Dpad + Sel or Sta)
+                ks = new KeyEvent(KeyEventActions.Up, bSt);
+
+            ic.SendKeyEvent(ks);
+
+            // Combos (Dpad & Dpad + Sel or Sta)
+
+            // Left + Up
             if (a == btnLU)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLe);
+                ks = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bUp);
+                kd = new KeyEvent(KeyEventActions.Down, bUp);
                 ic.SendKeyEvent(kd);
             }
+            // Left + Down
             if (a == btnLD)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLe);
+                ks = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bDo);
+                kd = new KeyEvent(KeyEventActions.Down, bDo);
                 ic.SendKeyEvent(kd);
             }
+            // Right + Up
             if (a == btnRU)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bRi);
+                ks = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bUp);
+                kd = new KeyEvent(KeyEventActions.Down, bUp);
                 ic.SendKeyEvent(kd);
             }
+            // Right + Down
             if (a == btnRD)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bRi);
+                ks = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bDo);
+                kd = new KeyEvent(KeyEventActions.Down, bDo);
                 ic.SendKeyEvent(kd);
             }
+            // Up + Start
             if (a == btnUSt)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bUp);
+                ks = new KeyEvent(KeyEventActions.Down, bUp);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
+                kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
+            // Up + Select
             if (a == btnUSe)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bSe);
+                ks = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bUp);
+                kd = new KeyEvent(KeyEventActions.Down, bUp);
                 ic.SendKeyEvent(kd);
             }
+            // Down + Start
             if (a == btnDSt)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bDo);
+                ks = new KeyEvent(KeyEventActions.Down, bDo);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
+                kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
+            // Down + Select
             if (a == btnDSe)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bDo);
+                ks = new KeyEvent(KeyEventActions.Down, bDo);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSe);
+                kd = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(kd);
             }
+            // Left + Start
             if (a == btnLSt)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLe);
+                ks = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
+                kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
+            // Left + Select
             if (a == btnLSe)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLe);
+                ks = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSe);
+                kd = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(kd);
             }
+            // Right + Start
             if (a == btnRSt)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bRi);
+                ks = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
+                kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
+            // Right + Select
             if (a == btnRSe)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bRi);
+                ks = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSe);
+                kd = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(kd);
             }
 
+            // Select + Start
             if (a == btnSeSt)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bSe);
+                ks = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
+                kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
-            //Triple (Dpad + Sel or Sta)
+
+            // Triple combos (Dpad + Sel or Sta)
+
+            // Left + Up + Start
             if (a == btnLUSt)
             {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bLe);
+                ka = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ka);
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bSt);
+                ks = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bUp);
+                kd = new KeyEvent(KeyEventActions.Down, bUp);
                 ic.SendKeyEvent(kd);
             }
+            // Left + Up + Select
             if (a == btnLUSe)
             {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bLe);
+                ka = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ka);
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bSe);
+                ks = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bUp);
+                kd = new KeyEvent(KeyEventActions.Down, bUp);
                 ic.SendKeyEvent(kd);
             }
+            // Left + Down + Start
             if (a == btnLDSt)
             {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bLe);
+                ka = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ka);
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bDo);
+                ks = new KeyEvent(KeyEventActions.Down, bDo);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
+                kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
+            // Left + Down + Select
             if (a == btnLDSe)
             {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bLe);
+                ka = new KeyEvent(KeyEventActions.Down, bLe);
                 ic.SendKeyEvent(ka);
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bSe);
+                ks = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bDo);
+                kd = new KeyEvent(KeyEventActions.Down, bDo);
                 ic.SendKeyEvent(kd);
             }
 
+            // Right + Up + Start
             if (a == btnRUSt)
             {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bRi);
+                ka = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ka);
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bUp);
+                ks = new KeyEvent(KeyEventActions.Down, bUp);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
+                kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
+            // Right + Up + Select
             if (a == btnRUSe)
             {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bRi);
+                ka = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ka);
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bUp);
+                ks = new KeyEvent(KeyEventActions.Down, bUp);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSe);
+                kd = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(kd);
             }
+            // Right + Down + Start
             if (a == btnRDSt)
             {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bRi);
+                ka = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ka);
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bDo);
+                ks = new KeyEvent(KeyEventActions.Down, bDo);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSt);
+                kd = new KeyEvent(KeyEventActions.Down, bSt);
                 ic.SendKeyEvent(kd);
             }
+            // Right + Down + Select
             if (a == btnRDSe)
             {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bRi);
+                ka = new KeyEvent(KeyEventActions.Down, bRi);
                 ic.SendKeyEvent(ka);
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bDo);
+                ks = new KeyEvent(KeyEventActions.Down, bDo);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bSe);
+                kd = new KeyEvent(KeyEventActions.Down, bSe);
                 ic.SendKeyEvent(kd);
             }
 
-            //TCXS + L R
-            if (b == 16)
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bT);
-                ic.SendKeyEvent(ka);
-            }
+            // XCTS + L R
+
+            if (b == btnT)
+                ka = new KeyEvent(KeyEventActions.Down, bT);
             else
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Up, bT);
-                ic.SendKeyEvent(ka);
-            }
-            if (b == 32)
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bC);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Up, bT);
+            
+            ic.SendKeyEvent(ka);
+            
+            if (b == btnC)
+                ka = new KeyEvent(KeyEventActions.Down, bC);
             else
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Up, bC);
-                ic.SendKeyEvent(ka);
-            }
-            if (b == 64)
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bX);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Up, bC);
+            
+            ic.SendKeyEvent(ka);
+
+            if (b == btnX)
+                ka = new KeyEvent(KeyEventActions.Down, bX);
             else
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Up, bX);
-                ic.SendKeyEvent(ka);
-            }
-            if (b == 128)
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bS);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Up, bX);
+                
+            ic.SendKeyEvent(ka);
+            
+            if (b == btnS)
+                ka = new KeyEvent(KeyEventActions.Down, bS);
             else
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Up, bS);
-                ic.SendKeyEvent(ka);
-            }
-            if (b == 1)
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bLt);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Up, bS);
+            
+            ic.SendKeyEvent(ka);
+
+            if (b == btnLt)
+                ka = new KeyEvent(KeyEventActions.Down, bLt);
             else
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Up, bLt);
-                ic.SendKeyEvent(ka);
-            }
-            if (b == 2)
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bRt);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Up, bLt);
+
+            ic.SendKeyEvent(ka);
+
+            if (b == btnRt)
+                ka = new KeyEvent(KeyEventActions.Down, bRt);
             else
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Up, bRt);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Up, bRt);
+
+            ic.SendKeyEvent(ka);
+
             if (b == btnXC)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bX);
+                ks = new KeyEvent(KeyEventActions.Down, bX);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bC);
+                kd = new KeyEvent(KeyEventActions.Down, bC);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnXS)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bX);
+                ks = new KeyEvent(KeyEventActions.Down, bX);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bS);
+                kd = new KeyEvent(KeyEventActions.Down, bS);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnCT)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bC);
+                ks = new KeyEvent(KeyEventActions.Down, bC);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bT);
+                kd = new KeyEvent(KeyEventActions.Down, bT);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnTS)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bT);
+                ks = new KeyEvent(KeyEventActions.Down, bT);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bS);
+                kd = new KeyEvent(KeyEventActions.Down, bS);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnXLt)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bX);
+                ks = new KeyEvent(KeyEventActions.Down, bX);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bLt);
+                kd = new KeyEvent(KeyEventActions.Down, bLt);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnXRt)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bX);
+                ks = new KeyEvent(KeyEventActions.Down, bX);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
+                kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnCLt)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bC);
+                ks = new KeyEvent(KeyEventActions.Down, bC);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bLt);
+                kd = new KeyEvent(KeyEventActions.Down, bLt);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnCRt)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bC);
+                ks = new KeyEvent(KeyEventActions.Down, bC);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
+                kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnTLt)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bT);
+                ks = new KeyEvent(KeyEventActions.Down, bT);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bLt);
+                kd = new KeyEvent(KeyEventActions.Down, bLt);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnTRt)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bT);
+                ks = new KeyEvent(KeyEventActions.Down, bT);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
+                kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnSLt)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bS);
+                ks = new KeyEvent(KeyEventActions.Down, bS);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bLt);
+                kd = new KeyEvent(KeyEventActions.Down, bLt);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnSRt)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bS);
+                ks = new KeyEvent(KeyEventActions.Down, bS);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
+                kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnLR)
             {
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLt);
+                ks = new KeyEvent(KeyEventActions.Down, bLt);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
+                kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnLRC)
             {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bC);
+                ka = new KeyEvent(KeyEventActions.Down, bC);
                 ic.SendKeyEvent(ka);
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLt);
+                ks = new KeyEvent(KeyEventActions.Down, bLt);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
+                kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnLRT)
             {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bT);
+                ka = new KeyEvent(KeyEventActions.Down, bT);
                 ic.SendKeyEvent(ka);
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLt);
+                ks = new KeyEvent(KeyEventActions.Down, bLt);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
+                kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnLRS)
             {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bS);
+                ka = new KeyEvent(KeyEventActions.Down, bS);
                 ic.SendKeyEvent(ka);
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLt);
+                ks = new KeyEvent(KeyEventActions.Down, bLt);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
+                kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
             if (b == btnLRX)
             {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, bX);
+                ka = new KeyEvent(KeyEventActions.Down, bX);
                 ic.SendKeyEvent(ka);
-                KeyEvent ks = new KeyEvent(KeyEventActions.Down, bLt);
+                ks = new KeyEvent(KeyEventActions.Down, bLt);
                 ic.SendKeyEvent(ks);
-                KeyEvent kd = new KeyEvent(KeyEventActions.Down, bRt);
+                kd = new KeyEvent(KeyEventActions.Down, bRt);
                 ic.SendKeyEvent(kd);
             }
-            //Analogs
+
+            // Left analog stick
+
             if (e <= 50 && e >= 0)
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, aLl);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Down, aLl);
             else
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Up, aLl);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Up, aLl);
+            
+            ic.SendKeyEvent(ka);
+
             if (e >= 200 && e <= 255)
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, aLr);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Down, aLr);
             else
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Up, aLr);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Up, aLr);
 
+            ic.SendKeyEvent(ka);
+            
             if (f <= 50 && f >= 0)
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, aLu);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Down, aLu);
             else
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Up, aLu);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Up, aLu);
+
+            ic.SendKeyEvent(ka);
+
             if (f >= 200 && f <= 255)
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, aLd);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Down, aLd);
             else
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Up, aLd);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Up, aLd);
 
+            ic.SendKeyEvent(ka);
 
-            //Analogs
+            // Right analog stick
+
             if (g <= 50 && g >= 0)
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, aRl);
-                ic.SendKeyEvent(ka);
+                ka = new KeyEvent(KeyEventActions.Down, aRl);
+            else
+                ka = new KeyEvent(KeyEventActions.Up, aRl);
 
-            }
-            else
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Up, aRl);
-                ic.SendKeyEvent(ka);
-            }
+            ic.SendKeyEvent(ka);
+            
             if (g >= 200 && g <= 255)
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, aRr);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Down, aRr);
             else
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Up, aRr);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Up, aRr);
+
+            ic.SendKeyEvent(ka);
 
             if (h <= 50 && g >= 0)
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, aRu);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Down, aRu);
             else
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Up, aRu);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Up, aRu);
+
+            ic.SendKeyEvent(ka);
+            
             if (h >= 200 && h <= 255)
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Down, aRd);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Down, aRd);
             else
-            {
-                KeyEvent ka = new KeyEvent(KeyEventActions.Up, aRd);
-                ic.SendKeyEvent(ka);
-            }
+                ka = new KeyEvent(KeyEventActions.Up, aRd);
+
+            ic.SendKeyEvent(ka);
         }
     }
 }
