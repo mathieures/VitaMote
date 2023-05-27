@@ -20,6 +20,7 @@ namespace VitaMote {
             Button saveButton = FindViewById<Button>(Resource.Id.saveIpBtn);
             Button changeIMEButton = FindViewById<Button>(Resource.Id.changeIMEBtn);
             Button customMappingButton = FindViewById<Button>(Resource.Id.customMappingBtn);
+            Button testNetworkButton = FindViewById<Button>(Resource.Id.testNetworkButton);
             EditText ipEditText = FindViewById<EditText>(Resource.Id.ipEditText);
 
             ipTextView = FindViewById<TextView>(Resource.Id.savedIPTextView);
@@ -55,6 +56,12 @@ namespace VitaMote {
             customMappingButton.Click += delegate
             {
                 StartActivity(typeof(CusMap));
+            };
+
+            // On click show the testing screen
+            testNetworkButton.Click += delegate
+            {
+                StartActivity(typeof(TestActivity));
             };
         }
         private void SaveIP(string ip)
