@@ -1,12 +1,12 @@
 using Android.App;
 using Android.Content;
-using Android.InputMethodServices;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
 using Java.Lang;
+using System;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -17,13 +17,13 @@ namespace VitaMote
     [Service(Label = "VitaIME", Permission = "android.permission.BIND_INPUT_METHOD", Exported = true)]
     [MetaData(name: "android.view.im", Resource = "@xml/method")]
     [IntentFilter(new[] { "android.view.InputMethod" })]
-    class VitaIME : InputMethodService, IOnKeyboardActionListener
+    class VitaIME : Android.InputMethodServices.InputMethodService, IOnKeyboardActionListener
     {
         // Network object used to receive input
         readonly TcpClient clientSocket = new TcpClient();
 
-        private KeyboardView kv;
-        private Keyboard keyboard;
+        private Android.InputMethodServices.KeyboardView kv;
+        private Android.InputMethodServices.Keyboard keyboard;
         private bool caps = false;
         
         // Connection between the input method and the running application
@@ -94,32 +94,32 @@ namespace VitaMote
         // Input to keycode conversions
         
         // DPAD
-        readonly Android.Views.Keycode bUp = Android.Views.Keycode.DpadUp;
-        readonly Android.Views.Keycode bDo = Android.Views.Keycode.DpadDown;
-        readonly Android.Views.Keycode bLe = Android.Views.Keycode.DpadLeft;
-        readonly Android.Views.Keycode bRi = Android.Views.Keycode.DpadRight;
+        readonly Keycode bUp = Keycode.DpadUp;
+        readonly Keycode bDo = Keycode.DpadDown;
+        readonly Keycode bLe = Keycode.DpadLeft;
+        readonly Keycode bRi = Keycode.DpadRight;
         // L-R Triggers
-        readonly Android.Views.Keycode bLt = Android.Views.Keycode.ButtonL1;
-        readonly Android.Views.Keycode bRt = Android.Views.Keycode.ButtonR1;
+        readonly Keycode bLt = Keycode.ButtonL1;
+        readonly Keycode bRt = Keycode.ButtonR1;
         // XCTS
-        readonly Android.Views.Keycode bX = Android.Views.Keycode.ButtonA;
-        readonly Android.Views.Keycode bC = Android.Views.Keycode.ButtonB;
-        readonly Android.Views.Keycode bT = Android.Views.Keycode.ButtonY;
-        readonly Android.Views.Keycode bS = Android.Views.Keycode.ButtonX;
+        readonly Keycode bX = Keycode.ButtonA;
+        readonly Keycode bC = Keycode.ButtonB;
+        readonly Keycode bT = Keycode.ButtonY;
+        readonly Keycode bS = Keycode.ButtonX;
         // SEL-STA
-        readonly Android.Views.Keycode bSe = Android.Views.Keycode.DpadCenter;
-        readonly Android.Views.Keycode bSt = Android.Views.Keycode.Back;
+        readonly Keycode bSe = Keycode.DpadCenter;
+        readonly Keycode bSt = Keycode.Back;
         // Analog sticks
         // LEFT
-        readonly Android.Views.Keycode aLu = Android.Views.Keycode.W;
-        readonly Android.Views.Keycode aLd = Android.Views.Keycode.S;
-        readonly Android.Views.Keycode aLl = Android.Views.Keycode.A;
-        readonly Android.Views.Keycode aLr = Android.Views.Keycode.D;
+        readonly Keycode aLu = Keycode.W;
+        readonly Keycode aLd = Keycode.S;
+        readonly Keycode aLl = Keycode.A;
+        readonly Keycode aLr = Keycode.D;
         // RIGHT
-        readonly Android.Views.Keycode aRu = Android.Views.Keycode.I;
-        readonly Android.Views.Keycode aRd = Android.Views.Keycode.K;
-        readonly Android.Views.Keycode aRl = Android.Views.Keycode.J;
-        readonly Android.Views.Keycode aRr = Android.Views.Keycode.L;
+        readonly Keycode aRu = Keycode.I;
+        readonly Keycode aRd = Keycode.K;
+        readonly Keycode aRl = Keycode.J;
+        readonly Keycode aRr = Keycode.L;
 
         bool running = false;
 
@@ -128,19 +128,18 @@ namespace VitaMote
             base.OnCreate();
 
             // Load custom mapping
-            LoadCM();
+            Keycode[] modifiableButtons = { bUp, bRi, bDo, bLe, bLt, bRt, bX, bC, bT, bS, bSe, bSt, aLu, aLd, aLl, aLr, aRu, aRd, aRl, aRr };
+            LoadCM(ref modifiableButtons);
 
             // Connect to the PSVita
             Connect();
         }
         
-        // Load current custom mapping and display it onto the screen
-        public void LoadCM()
+        // Load current custom mapping for use in the other functions
+        public void LoadCM(ref Keycode[] modifiableButtons)
         {
             try
             {
-                Android.Views.Keycode[] buttons = { bUp, bRi, bDo, bLe, bLt, bRt, bX, bC, bT, bS, bSe, bSt, aLu, aLd, aLl, aLr, aRu, aRd, aRl, aRr };
-
                 var cmFile = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "cm.scf");
 
                 var lines = File.ReadAllLines(cmFile);
@@ -148,9 +147,12 @@ namespace VitaMote
                 for (int i = 0; i < lines.Length; i++)
                 {
                     var line = lines[i];
-                    var button = buttons[i];
+                    var button = modifiableButtons[i];
 
-                    button = (Android.Views.Keycode)int.Parse(line);
+                    Console.WriteLine("bouton avant : " + button.ToString());
+                    button = (Keycode)int.Parse(line);
+                    Console.WriteLine("bouton apres : " + button.ToString());
+                    Console.WriteLine("array boutons apres : " + modifiableButtons.ToString());
                 }
             }
             catch (System.Exception ex)
@@ -160,15 +162,15 @@ namespace VitaMote
         }
         
         // Called when a key is pressed on the custom keyboard (?)
-        public void OnKey([GeneratedEnum] Android.Views.Keycode primaryCode, [GeneratedEnum] Android.Views.Keycode[] keyCodes)
+        public void OnKey([GeneratedEnum] Keycode primaryCode, [GeneratedEnum] Keycode[] keyCodes)
         {
-            // The connection between the keyboard and this app
+            // The connection between the process running the keyboard and the current displayed app
             IInputConnection ic = CurrentInputConnection;
 
             switch ((int)primaryCode)
             {
-                case (int)Android.Views.Keycode.Del:
-                    //ic.SendKeyEvent(new KeyEvent(KeyEventActions.Down,Android.Views.Keycode.Del));
+                case (int)Keycode.Del:
+                    //ic.SendKeyEvent(new KeyEvent(KeyEventActions.Down,Keycode.Del));
                     ic.DeleteSurroundingText(1, 0);
                     break;
 
@@ -178,11 +180,11 @@ namespace VitaMote
                     kv.InvalidateAllKeys();
                     break;
 
-                case (int)Android.Views.Keycode.Enter:
-                    ic.SendKeyEvent(new KeyEvent(KeyEventActions.Down, Android.Views.Keycode.Enter));
+                case (int)Keycode.Enter:
+                    ic.SendKeyEvent(new KeyEvent(KeyEventActions.Down, Keycode.Enter));
                     break;
 
-                case (int)Android.Views.Keycode.Button9: // Left analog stick pushed in (L3)
+                case (int)Keycode.Button9: // Left analog stick pushed in (L3)
                     try
                     {
                         Connect();
@@ -208,13 +210,13 @@ namespace VitaMote
         }
 
         // This part of the code is useless, but there is no way to continue without it (?)
-        public void OnPress([GeneratedEnum] Android.Views.Keycode primaryCode)
+        public void OnPress([GeneratedEnum] Keycode primaryCode)
         {
             //OnKey(primaryCode);
             //throw new NotImplementedException();
         }
 
-        public void OnRelease([GeneratedEnum] Android.Views.Keycode primaryCode)
+        public void OnRelease([GeneratedEnum] Keycode primaryCode)
         {
             // throw new NotImplementedException();
         }
@@ -245,7 +247,7 @@ namespace VitaMote
         }
 
         // Connect to the PSVita and start listening for input
-        public void Connect()
+        private void Connect()
         {
             running = true;
 
@@ -265,7 +267,7 @@ namespace VitaMote
                 if (!clientSocket.Connected)
                 {
                     Toast.MakeText(this, "Couldn't Connect", ToastLength.Long).Show();
-                    return;
+                    throw new System.Exception("Couldn't Connect");
                 }
                 Toast.MakeText(this, "PS VITA Connected", ToastLength.Long).Show();
                 RunUpdateLoop();
@@ -284,8 +286,8 @@ namespace VitaMote
         // Called when the custom keyboard is requested to appear
         public override View OnCreateInputView()
         {
-            kv = (KeyboardView)LayoutInflater.Inflate(Resource.Layout.keyboard, null);
-            keyboard = new Keyboard(this, Resource.Xml.qwerty);
+            kv = (Android.InputMethodServices.KeyboardView)LayoutInflater.Inflate(Resource.Layout.keyboard, null);
+            keyboard = new Android.InputMethodServices.Keyboard(this, Resource.Xml.qwerty);
             kv.Keyboard = keyboard;
             kv.OnKeyboardActionListener = this;
             return kv;
@@ -326,6 +328,7 @@ namespace VitaMote
             }
         }
 
+        // This function translates the bytes received to actual KeyCodes and sends them to the current application
         private void ParseInput(int a, int b, int c, int d, int e, int f, int g, int h)
         {
             ic = CurrentInputConnection;

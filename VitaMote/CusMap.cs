@@ -72,9 +72,11 @@ namespace VitaMote
             {
                 SetDefaults();
             };
+
             butSa.Click += delegate
             {
                 SaveCM();
+                Toast.MakeText(this, "Custom configuration saved", ToastLength.Long).Show();
             };
         }
         private void SaveCM()
@@ -88,8 +90,6 @@ namespace VitaMote
             }
 
             File.WriteAllText(cmFile, sb.ToString());
-
-            Toast.MakeText(this, "Successfully Saved", ToastLength.Long).Show();
         }
         public void LoadCM()
         {

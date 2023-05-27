@@ -61,7 +61,11 @@ namespace VitaMote {
             // On click show the testing screen
             testNetworkButton.Click += delegate
             {
-                StartActivity(typeof(TestActivity));
+                var ip = GetSavedIP();
+                if (!string.IsNullOrEmpty(ip))
+                    StartActivity(typeof(TestActivity));
+                else
+                    Toast.MakeText(this, "The IP cannot be empty.", ToastLength.Long).Show();
             };
         }
         private void SaveIP(string ip)
