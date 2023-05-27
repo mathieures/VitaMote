@@ -269,6 +269,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ButtonHelper.cs" />
     <Compile Include="TestActivity.cs" />
     <Compile Include="CusMap.cs" />
     <Compile Include="MainActivity.cs" />
