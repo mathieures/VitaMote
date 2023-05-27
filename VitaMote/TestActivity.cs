@@ -17,6 +17,7 @@ namespace VitaMote
     {
         TcpClient tcpClient;
         TextView connectionStatusText;
+        TextView displayText;
 
         protected override async void OnCreate(Bundle bundle)
         {
@@ -25,6 +26,7 @@ namespace VitaMote
             SetContentView(Resource.Layout.test_network_activity);
 
             connectionStatusText = FindViewById<TextView>(Resource.Id.connectionStatus);
+            displayText = FindViewById<TextView>(Resource.Id.displayText);
 
             string ip = Preferences.Get("ip", null);
             int port = 5000;
@@ -106,10 +108,12 @@ namespace VitaMote
                         convertedBytes += b.ToString() + " ";
                     }
                     Console.WriteLine($"Received : {receivedBytes.Length} bytes: {convertedBytes}");
+                    displayText.Text = convertedBytes;
                 }
-                catch (System.Exception ex)
+                catch (SocketException ex)
                 {
-                    Log.Info("Exception: ", ex.ToString());
+                    Toast.MakeText(this, "PSVita disconnected", ToastLength.Long).Show();
+                    Log.Error("Exception: ", ex.ToString());
                     break;
                 }
             }
