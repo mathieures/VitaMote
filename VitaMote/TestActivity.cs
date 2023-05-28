@@ -43,7 +43,7 @@ namespace VitaMote
             // Connect the TCP client
 
             connectionStatusText.Text = "Connecting...";
-            
+
             try
             {
                 tcpClient = new TcpClient();
@@ -74,10 +74,10 @@ namespace VitaMote
             Console.WriteLine($"Ping status for ({ip}): {reply.Status}");
             if (reply is { Status: IPStatus.Success })
             {
-                Console.WriteLine($"Address: {reply.Address}");
-                Console.WriteLine($"Roundtrip time: {reply.RoundtripTime}");
-                Console.WriteLine($"Time to live: {reply.Options?.Ttl}");
-                Console.WriteLine();
+                //Console.WriteLine($"Address: {reply.Address}");
+                //Console.WriteLine($"Roundtrip time: {reply.RoundtripTime}");
+                //Console.WriteLine($"Time to live: {reply.Options?.Ttl}");
+                //Console.WriteLine();
             
                 // Actually connect to the PSVita
                 tcpClient.Connect(ip, port);
@@ -106,19 +106,24 @@ namespace VitaMote
                     // Read 8 bytes from the stream
                     stream.Read(receivedBytes, 0, 8);
 
+                    // Consume other bytes (?)
+                    byte[] inStream = new byte[tcpClient.ReceiveBufferSize];
+                    stream.Read(inStream, 0, (int)tcpClient.ReceiveBufferSize);
+
                     // Convert them to ints
                     for (int i = 0; i < 8; i++)
-                        receivedInts[i] = (int)receivedBytes[i];
+                        receivedInts[i] = receivedBytes[i];
 
                     ParseInts(receivedInts);
 
-                    string convertedBytes = "";
-                    foreach (var b in receivedBytes)
-                    {
-                        convertedBytes += b.ToString() + " ";
-                    }
-                    Console.WriteLine($"Received : {receivedBytes.Length} bytes: {convertedBytes}");
-                    displayText.Text = convertedBytes;
+                    //// For debugging purposes
+                    //string convertedBytes = "";
+                    //foreach (var b in receivedBytes)
+                    //{
+                    //    convertedBytes += b.ToString() + " ";
+                    //}
+                    //Console.WriteLine($"Received : {receivedBytes.Length} bytes: {convertedBytes}");
+                    //displayText.Text = convertedBytes;
                 }
                 catch (SocketException ex)
                 {
@@ -301,10 +306,11 @@ namespace VitaMote
                     dictionary[ButtonHelper.bSe] = true;
                     break;
                 default:
-                    throw new Exception(
-                        "If this happens, it means not all the codes are listed in" +
-                        "ButtonHelper (or there was an error in the received packet)"
-                    );
+                    break;
+                    //throw new Exception(
+                    //    "If this happens, it means not all the codes are listed in" +
+                    //    "ButtonHelper (or there was an error in the received packet)"
+                    //);
             }
 
             // Second int takes care of SXCT, L trigger, R trigger
@@ -403,10 +409,11 @@ namespace VitaMote
                     dictionary[ButtonHelper.bRt] = true;
                     break;
                 default:
-                    throw new Exception(
-                        "If this happens, it means not all the codes are listed in" +
-                        "ButtonHelper (or there was an error in the received packet)"
-                    );
+                    //throw new Exception(
+                    //    "If this happens, it means not all the codes are listed in" +
+                    //    "ButtonHelper (or there was an error in the received packet)"
+                    //);
+                    break;
             }
 
             // Third int is not used
@@ -438,7 +445,17 @@ namespace VitaMote
             if (200 < ints[7] && ints[7] <= 255)
                 dictionary[ButtonHelper.aRd] = true;
 
-            // TODO: draw conclusions
+            // TODO: do the actual stuff with the keycodes
+
+            // For debugging purposes
+            displayText.Text = $"";
+            // For each key-value pair, if the key is true, add the Keycode to the display text
+            foreach (var kvp in dictionary)
+            {
+                if (kvp.Value)
+                    displayText.Text += kvp.Key + "\n";
+            }
+            Console.WriteLine(displayText.Text);
         }
 
         private readonly byte[] _requestBytes = System.Text.Encoding.ASCII.GetBytes("request");
