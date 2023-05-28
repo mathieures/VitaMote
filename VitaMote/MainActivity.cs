@@ -63,7 +63,7 @@ namespace VitaMote {
             {
                 var ip = GetSavedIP();
                 if (!string.IsNullOrEmpty(ip))
-                    StartActivity(typeof(TestActivity));
+                    StartActivity(typeof(ConnectionTester));
                 else
                     Toast.MakeText(this, "The IP cannot be empty.", ToastLength.Long).Show();
             };

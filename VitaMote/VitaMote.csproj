@@ -270,7 +270,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ButtonHelper.cs" />
-    <Compile Include="TestActivity.cs" />
+    <Compile Include="ConnectionTester.cs" />
     <Compile Include="CusMap.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="TestIME.cs" />
@@ -381,7 +381,7 @@
     <AndroidResource Include="Resources\drawable\bU.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\test_network_activity.axml">
+    <AndroidResource Include="Resources\layout\connection_tester.axml">
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </AndroidResource>

@@ -1,12 +1,15 @@
-﻿// Activity that will act as a network tester, to see if keys (or anything, really) are received from the PSVita
+﻿// Activity acting as a connection tester, displaying the keys pressed on the PSVita
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Android.App;
+using Android.Opengl;
 using Android.OS;
+using Android.Telecom;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
@@ -15,7 +18,7 @@ using Xamarin.Essentials;
 namespace VitaMote
 {
     [Activity(Label = "Network tester")]
-    public class TestActivity: Activity
+    public class ConnectionTester : Activity
     {
         TcpClient tcpClient;
         TextView connectionStatusText;
@@ -25,7 +28,7 @@ namespace VitaMote
         {
             base.OnCreate(bundle);
 
-            SetContentView(Resource.Layout.test_network_activity);
+            SetContentView(Resource.Layout.connection_tester);
 
             connectionStatusText = FindViewById<TextView>(Resource.Id.connectionStatus);
             displayText = FindViewById<TextView>(Resource.Id.displayText);
@@ -42,7 +45,8 @@ namespace VitaMote
 
             // Connect the TCP client
 
-            connectionStatusText.Text = "Connecting...";
+            connectionStatusText.Text = Resources.GetString(Resource.String.connecting);
+            displayText.Text = Resources.GetString(Resource.String.pressButton);
 
             try
             {
@@ -52,8 +56,8 @@ namespace VitaMote
             catch (Exception ex)
             {
                 Toast.MakeText(this, $"Couldn't connect to IP '{ip}' and port '{port}'", ToastLength.Long).Show();
-                Console.WriteLine(ex.ToString());
-                
+                Log.Error("TryConnectionAsync", ex.ToString());
+
                 // TODO: figure out what is necessary to cancel showing the page and what is not
                 SetResult(Result.Canceled);
                 Finish();
@@ -61,7 +65,7 @@ namespace VitaMote
             }
 
             // Change the connection status
-            connectionStatusText.Text = "Connected";
+            connectionStatusText.Text = Resources.GetString(Resource.String.connected);
 
             // Start listening
             await Run();
@@ -71,20 +75,19 @@ namespace VitaMote
             using Ping ping = new Ping();
 
             PingReply reply = await ping.SendPingAsync(ip);
-            Console.WriteLine($"Ping status for ({ip}): {reply.Status}");
+            Log.Info("Ping", $"Ping status for ({ip}): {reply.Status}");
             if (reply is { Status: IPStatus.Success })
             {
-                //Console.WriteLine($"Address: {reply.Address}");
-                //Console.WriteLine($"Roundtrip time: {reply.RoundtripTime}");
-                //Console.WriteLine($"Time to live: {reply.Options?.Ttl}");
-                //Console.WriteLine();
-            
+                Log.Info("Ping", $"Address: {reply.Address}");
+                Log.Info("Ping", $"Roundtrip time: {reply.RoundtripTime}");
+                Log.Info("Ping", $"Time to live: {reply.Options?.Ttl}");
+
                 // Actually connect to the PSVita
                 tcpClient.Connect(ip, port);
             }
             else
             {
-                Console.WriteLine("Connection failed");
+                Log.Error("Ping", "Connection failed");
                 throw new Exception("Connection failed");
             }
         }
@@ -98,7 +101,7 @@ namespace VitaMote
             {
                 try
                 {
-                    await Task.Delay(100); // TODO: check if this is necessary
+                    await Task.Delay(50); // TODO: check if this is necessary
 
                     // Request the PSVita for new input
                     RequestInput(stream);
@@ -114,18 +117,12 @@ namespace VitaMote
                     for (int i = 0; i < 8; i++)
                         receivedInts[i] = receivedBytes[i];
 
+                    // Parse the received input
                     ParseInts(receivedInts);
-
-                    //// For debugging purposes
-                    //string convertedBytes = "";
-                    //foreach (var b in receivedBytes)
-                    //{
-                    //    convertedBytes += b.ToString() + " ";
-                    //}
-                    //Console.WriteLine($"Received : {receivedBytes.Length} bytes: {convertedBytes}");
-                    //displayText.Text = convertedBytes;
                 }
-                catch (SocketException ex)
+                catch (Exception ex) when (
+                    ex is SocketException
+                    || ex is IOException)
                 {
                     Toast.MakeText(this, "PSVita disconnected", ToastLength.Long).Show();
                     Log.Error("Exception: ", ex.ToString());
@@ -262,7 +259,7 @@ namespace VitaMote
                     dictionary[ButtonHelper.bLe] = true;
                     dictionary[ButtonHelper.bUp] = true;
                     dictionary[ButtonHelper.bSt] = true;
-                        break;
+                    break;
                 // Left + Up + Select
                 case ButtonHelper.btnLUSe:
                     dictionary[ButtonHelper.bLe] = true;
@@ -420,29 +417,29 @@ namespace VitaMote
             // Fourth int is not used
 
             // The fifth int and half of the sixth take care of the left analog stick
-            if (0 < ints[4] && ints[4] <= 50)
+            if (0 <= ints[4] && ints[4] <= 50)
                 dictionary[ButtonHelper.aLl] = true;
 
-            if (200 < ints[4] && ints[4] <= 255)
+            if (200 <= ints[4] && ints[4] <= 255)
                 dictionary[ButtonHelper.aLr] = true;
 
-            if (0 < ints[5] && ints[5] <= 50)
+            if (0 <= ints[5] && ints[5] <= 50)
                 dictionary[ButtonHelper.aLu] = true;
 
-            if (200 < ints[5] && ints[5] <= 255)
+            if (200 <= ints[5] && ints[5] <= 255)
                 dictionary[ButtonHelper.aLd] = true;
 
             // Half of the sixth int and the seventh take care of the right analog stick
-            if (0 < ints[6] && ints[6] <= 50)
+            if (0 <= ints[6] && ints[6] <= 50)
                 dictionary[ButtonHelper.aRl] = true;
 
-            if (200 < ints[6] && ints[6] <= 255)
+            if (200 <= ints[6] && ints[6] <= 255)
                 dictionary[ButtonHelper.aRr] = true;
 
-            if (0 < ints[6] && ints[7] <= 50)
+            if (0 <= ints[6] && ints[7] <= 50)
                 dictionary[ButtonHelper.aRu] = true;
 
-            if (200 < ints[7] && ints[7] <= 255)
+            if (200 <= ints[7] && ints[7] <= 255)
                 dictionary[ButtonHelper.aRd] = true;
 
             // TODO: do the actual stuff with the keycodes
@@ -460,7 +457,7 @@ namespace VitaMote
 
         private readonly byte[] _requestBytes = System.Text.Encoding.ASCII.GetBytes("request");
 
-        // Send "request" to the PSVita to ask for input
+        // Send "request" to the PSVita to ask for input (any 7 bytes will work, if I'm not mistaken)
         void RequestInput(NetworkStream stream)
         {
             stream.Write(_requestBytes, 0, _requestBytes.Length);
