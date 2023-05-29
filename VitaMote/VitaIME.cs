@@ -157,7 +157,7 @@ namespace VitaMote
             }
             catch (System.Exception ex)
             {
-                Log.Verbose("{1}", ex.ToString());
+                Log.Info("{1}", ex.ToString());
             }
         }
         

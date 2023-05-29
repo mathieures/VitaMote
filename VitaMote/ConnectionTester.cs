@@ -7,9 +7,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Android.App;
-using Android.Opengl;
 using Android.OS;
-using Android.Telecom;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
@@ -87,8 +85,7 @@ namespace VitaMote
             }
             else
             {
-                Log.Error("Ping", "Connection failed");
-                throw new Exception("Connection failed");
+                throw new Exception($"{ip}:{port} is unreachable");
             }
         }
         async Task Run()
@@ -326,10 +323,10 @@ namespace VitaMote
                     dictionary[ButtonHelper.bT] = true;
                     break;
                 case ButtonHelper.btnRt:
-                    dictionary[ButtonHelper.bLt] = true;
+                    dictionary[ButtonHelper.bRt] = true;
                     break;
                 case ButtonHelper.btnLt:
-                    dictionary[ButtonHelper.bRt] = true;
+                    dictionary[ButtonHelper.bLt] = true;
                     break;
                 // Double combos (SXCT, L, R)
                 case ButtonHelper.btnXC:
