@@ -9,4 +9,5 @@ Planned improvements:
 - [ ] Remove the deprecated `Keyboard` and `KeyboardView` classes
 - [ ] Fix the custom keyboard not appearing (I wonder if it's needed at all)
 - [x] Send keys from the PSVita to the app
+- [ ] Reduce input lag
 - [ ] Interact with other processes (create a new Input Method to send those keys to other processes)
