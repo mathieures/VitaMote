@@ -138,7 +138,7 @@
         <TableRow
             android:id="@+id/tableRow1">
             <Button
-                android:text="@string/testNetwork"
+                android:text="@string/testConnection"
                 android:id="@+id/testNetworkButton" />
             <Button
                 android:text="@string/customMapping"

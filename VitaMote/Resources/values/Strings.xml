@@ -20,7 +20,7 @@
 	
     <string name="changeIME">Change IME</string>
     <string name="customMapping">Custom Mapping</string>
-    <string name="testNetwork">Test network</string>
+    <string name="testConnection">Test connection</string>
     <string name="testIME">Test IME</string>
 
     <!--Network tester-->
