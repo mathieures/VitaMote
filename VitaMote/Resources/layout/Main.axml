@@ -136,22 +136,34 @@
         android:id="@+id/tableLayout1"
         android:stretchColumns="*">
         <TableRow
-            android:id="@+id/tableRow1">
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
             <Button
                 android:text="@string/testConnection"
-                android:id="@+id/testNetworkButton" />
+                android:id="@+id/testConnectionButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
             <Button
                 android:text="@string/customMapping"
-                android:id="@+id/customMappingBtn" />
+                android:id="@+id/customMappingBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </TableRow>
         <TableRow
-            android:id="@+id/tableRow2">
+            android:id="@+id/tableRow2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
             <Button
                 android:text="@string/testIME"
-                android:id="@+id/testIMEButton" />
+                android:id="@+id/testIMEButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
             <Button
                 android:text="@string/changeIME"
-                android:id="@+id/changeIMEBtn" />
+                android:id="@+id/changeIMEBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </TableRow>
     </TableLayout>
     <!--Action buttons-->

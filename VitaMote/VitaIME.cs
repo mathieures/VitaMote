@@ -128,15 +128,17 @@ namespace VitaMote
             base.OnCreate();
 
             // Load custom mapping
-            Keycode[] modifiableButtons = { bUp, bRi, bDo, bLe, bLt, bRt, bX, bC, bT, bS, bSe, bSt, aLu, aLd, aLl, aLr, aRu, aRd, aRl, aRr };
-            LoadCM(ref modifiableButtons);
+            //Keycode[] modifiableButtons = { bUp, bRi, bDo, bLe, bLt, bRt, bX, bC, bT, bS, bSe, bSt, aLu, aLd, aLl, aLr, aRu, aRd, aRl, aRr };
+            LoadCM();
+            //LoadCM(ref modifiableButtons);
 
             // Connect to the PSVita
             Connect();
         }
         
         // Load current custom mapping for use in the other functions
-        public void LoadCM(ref Keycode[] modifiableButtons)
+        public void LoadCM()
+        //public void LoadCM(ref Keycode[] modifiableButtons)
         {
             try
             {
@@ -144,15 +146,14 @@ namespace VitaMote
 
                 var lines = File.ReadAllLines(cmFile);
 
+                Keycode[] modifiableButtons = { bUp, bRi, bDo, bLe, bLt, bRt, bX, bC, bT, bS, bSe, bSt, aLu, aLd, aLl, aLr, aRu, aRd, aRl, aRr };
+
                 for (int i = 0; i < lines.Length; i++)
                 {
                     var line = lines[i];
                     var button = modifiableButtons[i];
 
-                    Console.WriteLine("bouton avant : " + button.ToString());
                     button = (Keycode)int.Parse(line);
-                    Console.WriteLine("bouton apres : " + button.ToString());
-                    Console.WriteLine("array boutons apres : " + modifiableButtons.ToString());
                 }
             }
             catch (System.Exception ex)

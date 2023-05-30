@@ -58,8 +58,8 @@ namespace VitaMote {
                 StartActivity(typeof(CusMap));
             };
 
-            // On click show the testing screen
-            testNetworkButton.Click += delegate
+            // On click show the connection testing page
+            testConnectionButton.Click += delegate
             {
                 var ip = GetSavedIP();
                 if (!string.IsNullOrEmpty(ip))

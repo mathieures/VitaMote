@@ -289,7 +289,7 @@
     <AndroidResource Include="Resources\layout\preview.xml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\Mapping.axml">
+    <AndroidResource Include="Resources\layout\CustomMapping.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

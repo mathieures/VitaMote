@@ -26,35 +26,35 @@ namespace VitaMote
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            SetContentView(Resource.Layout.Mapping);
+            SetContentView(Resource.Layout.CustomMapping);
 
             // UI elements
             spinners = new[]
             {
-                (Spinner)FindViewById(Resource.Id.spinner1),
-                (Spinner)FindViewById(Resource.Id.spinner2),
-                (Spinner)FindViewById(Resource.Id.spinner3),
-                (Spinner)FindViewById(Resource.Id.spinner4),
-                (Spinner)FindViewById(Resource.Id.spinner5),
-                (Spinner)FindViewById(Resource.Id.spinner6),
-                (Spinner)FindViewById(Resource.Id.spinner7),
-                (Spinner)FindViewById(Resource.Id.spinner8),
-                (Spinner)FindViewById(Resource.Id.spinner9),
-                (Spinner)FindViewById(Resource.Id.spinner10),
-                (Spinner)FindViewById(Resource.Id.spinner11),
-                (Spinner)FindViewById(Resource.Id.spinner12),
-                (Spinner)FindViewById(Resource.Id.spinner13),
-                (Spinner)FindViewById(Resource.Id.spinner14),
-                (Spinner)FindViewById(Resource.Id.spinner15),
-                (Spinner)FindViewById(Resource.Id.spinner16),
-                (Spinner)FindViewById(Resource.Id.spinner17),
-                (Spinner)FindViewById(Resource.Id.spinner18),
-                (Spinner)FindViewById(Resource.Id.spinner19),
-                (Spinner)FindViewById(Resource.Id.spinner20)
+                (Spinner)FindViewById(Resource.Id.spinner1), 
+                (Spinner)FindViewById(Resource.Id.spinner2), 
+                (Spinner)FindViewById(Resource.Id.spinner3), 
+                (Spinner)FindViewById(Resource.Id.spinner4), 
+                (Spinner)FindViewById(Resource.Id.spinner5), 
+                (Spinner)FindViewById(Resource.Id.spinner6), 
+                (Spinner)FindViewById(Resource.Id.spinner7), 
+                (Spinner)FindViewById(Resource.Id.spinner8), 
+                (Spinner)FindViewById(Resource.Id.spinner9), 
+                (Spinner)FindViewById(Resource.Id.spinner10), 
+                (Spinner)FindViewById(Resource.Id.spinner11), 
+                (Spinner)FindViewById(Resource.Id.spinner12), 
+                (Spinner)FindViewById(Resource.Id.spinner13), 
+                (Spinner)FindViewById(Resource.Id.spinner14), 
+                (Spinner)FindViewById(Resource.Id.spinner15), 
+                (Spinner)FindViewById(Resource.Id.spinner16), 
+                (Spinner)FindViewById(Resource.Id.spinner17), 
+                (Spinner)FindViewById(Resource.Id.spinner18), 
+                (Spinner)FindViewById(Resource.Id.spinner19), 
+                (Spinner)FindViewById(Resource.Id.spinner20) 
             };
 
             Button butLo = (Button)FindViewById(Resource.Id.btnLoad);
-            Button butSa = (Button)FindViewById(Resource.Id.btnSve);
+            Button butSa = (Button)FindViewById(Resource.Id.btnSave);
 
             ArrayAdapter<string> adapter = new ArrayAdapter<string>(
                 this,
@@ -68,6 +68,7 @@ namespace VitaMote
             }
 
             LoadCM();
+
             butLo.Click += delegate
             {
                 SetDefaults();
