@@ -3,6 +3,8 @@ using Android.Widget;
 using Android.OS;
 using Android.Views.InputMethods;
 using Xamarin.Essentials;
+using Android.Content;
+using System;
 
 namespace VitaMote {
     [Activity(Label = "VitaMote", MainLauncher = true, Icon = "@drawable/icon")]
@@ -19,8 +21,11 @@ namespace VitaMote {
 
             Button saveButton = FindViewById<Button>(Resource.Id.saveIpBtn);
             Button changeIMEButton = FindViewById<Button>(Resource.Id.changeIMEBtn);
+
             Button customMappingButton = FindViewById<Button>(Resource.Id.customMappingBtn);
-            Button testNetworkButton = FindViewById<Button>(Resource.Id.testNetworkButton);
+            Button testConnectionButton = FindViewById<Button>(Resource.Id.testConnectionButton);
+            Button testIMEButton = FindViewById<Button>(Resource.Id.testIMEButton);
+            
             EditText ipEditText = FindViewById<EditText>(Resource.Id.ipEditText);
 
             ipTextView = FindViewById<TextView>(Resource.Id.savedIPTextView);
@@ -67,7 +72,28 @@ namespace VitaMote {
                 else
                     Toast.MakeText(this, "The IP cannot be empty.", ToastLength.Long).Show();
             };
+
+            // On click show the IME testing page
+            testIMEButton.Click += delegate
+            {
+                StartActivity(typeof(TestIMEActivity));
+            };
         }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            // Start the service
+            var intent = new Intent(this, typeof(TestIMEService));
+            StartService(intent);
+
+
+            // test: starting the old service too
+            intent = new Intent(this, typeof(VitaIME));
+            StartService(intent);
+        }
+
         private void SaveIP(string ip)
         {
             Preferences.Set("ip", ip);

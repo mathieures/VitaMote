@@ -89,7 +89,6 @@ namespace VitaMote
             {
                 sb.AppendLine(((int)keycodes[(int)spinner.SelectedItemId]).ToString());
             }
-
             File.WriteAllText(cmFile, sb.ToString());
         }
         public void LoadCM()
@@ -97,7 +96,6 @@ namespace VitaMote
             try
             {
                 var cmFile = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "cm.scf");
-
                 var lines = File.ReadAllLines(cmFile);
 
                 for (int i = 0; i < lines.Length; i++)

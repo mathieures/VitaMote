@@ -1,3 +1,7 @@
+using System;
+using System.IO;
+using System.Net.Sockets;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Runtime;
@@ -6,10 +10,6 @@ using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
 using Java.Lang;
-using System;
-using System.IO;
-using System.Net.Sockets;
-using System.Threading.Tasks;
 using static Android.InputMethodServices.KeyboardView;
 
 namespace VitaMote
