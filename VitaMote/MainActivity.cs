@@ -1,18 +1,19 @@
 ﻿using Android.App;
-using Android.Widget;
+using Android.Content;
 using Android.OS;
 using Android.Views.InputMethods;
+using Android.Widget;
 using Xamarin.Essentials;
-using Android.Content;
-using System;
 
-namespace VitaMote {
+namespace VitaMote
+{
     [Activity(Label = "VitaMote", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainActivity : Activity {
 
         TextView ipTextView;
 
-        protected override void OnCreate(Bundle bundle) {
+        protected override void OnCreate(Bundle bundle)
+        {
             base.OnCreate(bundle);
 
             Platform.Init(this, bundle);
@@ -86,11 +87,6 @@ namespace VitaMote {
 
             // Start the service
             var intent = new Intent(this, typeof(TestIMEService));
-            StartService(intent);
-
-
-            // test: starting the old service too
-            intent = new Intent(this, typeof(VitaIME));
             StartService(intent);
         }
 

@@ -22,6 +22,9 @@
     <string name="customMapping">Custom Mapping</string>
     <string name="testConnection">Test connection</string>
     <string name="testIME">Test IME</string>
+	
+    <!--Custom mapping-->
+    <string name="saveConfig">Save</string>
 
     <!--Network tester-->
     <string name="displayTextPlaceholder">[Display text]</string>

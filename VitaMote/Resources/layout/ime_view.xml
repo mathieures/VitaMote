@@ -5,46 +5,38 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    >
+    android:layout_alignParentBottom="true" >
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        >
-
-        <!-- 
+        android:layout_height="48sp" >
+     <!-- 
      You can define the keycodes in "android:tag" using Unicode scheme or KeyEvent.KEYCODE_ scheme.
      I will use the latter because it is easier to implement and allows greater features,
      such as handling all special keys simultaneously and using meta keys like ctrl or alt. -->
-
         <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/keyShift"
             android:tag="SHIFT"
-            android:text="SHFT"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:text="SHIFT" />
         <Button
-            android:tag="G"
-            android:text="g"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:id="@+id/keyG"
+            android:tag="g"
+            android:text="g" />
         <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:tag="3"
-            android:text="3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:text="3" />
         <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:tag="APOSTROPHE"
-            android:text="\'"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <Button
-            android:tag="DEL"
-            android:text="&lt;\-"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
+            android:text="\'" />
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
@@ -52,14 +44,17 @@
         android:minHeight="25px"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/linearLayout1">
+        android:id="@+id/linearLayout1" >
         <Button
-            android:tag="ENTER"
-            android:text="&lt;\-\|"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/button1" />
-    </LinearLayout>
-
+            android:layout_height="wrap_content"
+            android:tag="DEL"
+            android:text="&lt;\-" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tag="ENTER"
+            android:text="&lt;\-\|" />
+        </LinearLayout>
     <!-- Add more rows with the same scheme. -->
 </LinearLayout>
