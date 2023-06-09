@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.OS;
+using Android.Util;
 using Android.Views.InputMethods;
 using Android.Widget;
 using Xamarin.Essentials;
@@ -77,7 +78,7 @@ namespace VitaMote
             // On click show the IME testing page
             testIMEButton.Click += delegate
             {
-                StartActivity(typeof(TestIMEActivity));
+                StartActivity(typeof(ImeTester));
             };
         }
 
@@ -86,8 +87,15 @@ namespace VitaMote
             base.OnStart();
 
             // Start the service
-            var intent = new Intent(this, typeof(TestIMEService));
-            StartService(intent);
+            var intent = new Intent(this, typeof(VitaIme));
+            try
+            {
+                StartService(intent);
+            }
+            catch (BackgroundServiceStartNotAllowedException)
+            {
+                Log.Error("OnStart", "Could not start service. Maybe the application is in the background.");
+            }
         }
 
         private void SaveIP(string ip)

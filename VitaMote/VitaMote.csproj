@@ -273,9 +273,9 @@
     <Compile Include="ConnectionTester.cs" />
     <Compile Include="CusMap.cs" />
     <Compile Include="MainActivity.cs" />
-    <Compile Include="TestIMEActivity.cs" />
-    <Compile Include="TestIMEService.cs" />
-    <Compile Include="VitaIME.cs" />
+    <Compile Include="ImeTester.cs" />
+    <Compile Include="VitaConnection.cs" />
+    <Compile Include="VitaIme.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -284,12 +284,6 @@
     <None Include="packages.config" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
-    <AndroidResource Include="Resources\layout\keyboard.xml">
-      <SubType>AndroidResource</SubType>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\preview.xml">
-      <SubType>AndroidResource</SubType>
-    </AndroidResource>
     <AndroidResource Include="Resources\layout\CustomMapping.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
@@ -312,9 +306,6 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\xml\method.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\xml\qwerty.xml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\colorbg.xml">

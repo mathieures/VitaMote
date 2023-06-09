@@ -7,7 +7,7 @@ using Android.OS;
 namespace VitaMote
 {
     [Activity(Label = "IME tester", WindowSoftInputMode = Android.Views.SoftInput.StateVisible)]
-    public class TestIMEActivity : Activity
+    public class ImeTester : Activity
     {
         protected override void OnCreate(Bundle bundle)
         {
