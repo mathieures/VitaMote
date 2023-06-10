@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Android.App;
 using Android.OS;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 
@@ -14,7 +14,7 @@ namespace VitaMote
     public class CusMap : Activity
     {
         // KeyCodes
-        readonly List<Keycode> keycodes = new List<Keycode>{ Keycode.A, Keycode.B, Keycode.C, Keycode.D, Keycode.E, Keycode.F, Keycode.G, Keycode.H, Keycode.I, Keycode.J, Keycode.K, Keycode.L, Keycode.M, Keycode.N, Keycode.O, Keycode.P, Keycode.Q, Keycode.R, Keycode.S, Keycode.T, Keycode.U, Keycode.V, Keycode.W, Keycode.X, Keycode.Y, Keycode.Z, Keycode.AltLeft, Keycode.AltRight, Keycode.Apostrophe, Keycode.AppSwitch, Keycode.Assist, Keycode.At, Keycode.AvrInput, Keycode.AvrPower, Keycode.Back, Keycode.Backslash, Keycode.Bookmark, Keycode.Break, Keycode.BrightnessUp, Keycode.BrightnessDown, Keycode.Button1, Keycode.Button2, Keycode.Button3, Keycode.Button4, Keycode.Button5, Keycode.Button6, Keycode.Button7, Keycode.Button8, Keycode.Button9, Keycode.Button10, Keycode.Button11, Keycode.Button12, Keycode.Button13, Keycode.Button14, Keycode.Button15, Keycode.Button16, Keycode.ButtonA, Keycode.ButtonB, Keycode.ButtonC, Keycode.ButtonX, Keycode.ButtonY, Keycode.ButtonZ, Keycode.ButtonL1, Keycode.ButtonL2, Keycode.ButtonR1, Keycode.ButtonR2, Keycode.ButtonSelect, Keycode.ButtonStart, Keycode.ButtonMode, Keycode.ButtonThumbl, Keycode.ButtonThumbr, Keycode.Calculator, Keycode.Calendar, Keycode.Call, Keycode.Camera, Keycode.CapsLock, Keycode.Captions, Keycode.ChannelUp, Keycode.ChannelDown, Keycode.Clear, Keycode.Comma, Keycode.Contacts, Keycode.Copy, Keycode.CtrlLeft, Keycode.CtrlRight, Keycode.Cut, Keycode.Del, Keycode.DpadCenter, Keycode.DpadDownLeft, Keycode.DpadDownRight, Keycode.DpadUpLeft, Keycode.DpadUpRight, Keycode.DpadLeft, Keycode.DpadRight, Keycode.DpadUp, Keycode.DpadDown, Keycode.Dvr, Keycode.Eisu, Keycode.Endcall, Keycode.Enter, Keycode.Envelope, Keycode.Equals, Keycode.Escape, Keycode.Explorer, Keycode.F1, Keycode.F2, Keycode.F3, Keycode.F4, Keycode.F5, Keycode.F6, Keycode.F7, Keycode.F8, Keycode.F9, Keycode.F10, Keycode.F11, Keycode.F12, Keycode.Focus, Keycode.Forward, Keycode.ForwardDel, Keycode.Function, Keycode.Grave, Keycode.Guide, Keycode.Headsethook, Keycode.Help, Keycode.Henkan, Keycode.Home, Keycode.Info, Keycode.Insert, Keycode.K11, Keycode.K12, Keycode.Kana, Keycode.KatakanaHiragana, Keycode.LanguageSwitch, Keycode.LastChannel, Keycode.LeftBracket, Keycode.MannerMode, Keycode.MediaAudioTrack, Keycode.MediaClose, Keycode.MediaEject, Keycode.MediaFastForward, Keycode.MediaNext, Keycode.MediaPause, Keycode.MediaPlay, Keycode.MediaPlayPause, Keycode.MediaPrevious, Keycode.MediaRecord, Keycode.MediaRewind, Keycode.MediaStop, Keycode.Menu, Keycode.Minus, Keycode.Music, Keycode.Mute, Keycode.NavigateIn, Keycode.NavigateOut, Keycode.NavigatePrevious, Keycode.Notification, Keycode.Num, Keycode.Num0, Keycode.Num1, Keycode.Num2, Keycode.Num3, Keycode.Num4, Keycode.Num5, Keycode.Num6, Keycode.Num7, Keycode.Num8, Keycode.Num9, Keycode.NumLock, Keycode.Numpad0, Keycode.Numpad1, Keycode.Numpad2, Keycode.Numpad3, Keycode.Numpad4, Keycode.Numpad5, Keycode.Numpad6, Keycode.Numpad7, Keycode.Numpad8, Keycode.Numpad9, Keycode.NumpadAdd, Keycode.NumpadComma, Keycode.NumpadDivide, Keycode.NumpadDot, Keycode.NumpadEnter, Keycode.NumpadEquals, Keycode.NumpadMultiply, Keycode.NumpadSubtract, Keycode.NumpadLeftParen, Keycode.NumpadRightParen, Keycode.PageDown, Keycode.PageUp, Keycode.Pairing, Keycode.Paste, Keycode.Period, Keycode.Plus, Keycode.Pound, Keycode.Power, Keycode.ProgGreen, Keycode.ProgRed, Keycode.ProgBlue, Keycode.ProgYellow, Keycode.RightBracket, Keycode.Search, Keycode.Semicolon, Keycode.Settings, Keycode.ShiftLeft, Keycode.ShiftRight, Keycode.Slash, Keycode.Sleep, Keycode.Space, Keycode.Star, Keycode.Sym, Keycode.Sysrq, Keycode.Tab, Keycode.VolumeDown, Keycode.VolumeUp, Keycode.VolumeMute, Keycode.Wakeup, Keycode.Window, Keycode.ZoomIn, Keycode.ZoomOut };
+        readonly List<Keycode> keycodes = new List<Keycode> { Keycode.A, Keycode.B, Keycode.C, Keycode.D, Keycode.E, Keycode.F, Keycode.G, Keycode.H, Keycode.I, Keycode.J, Keycode.K, Keycode.L, Keycode.M, Keycode.N, Keycode.O, Keycode.P, Keycode.Q, Keycode.R, Keycode.S, Keycode.T, Keycode.U, Keycode.V, Keycode.W, Keycode.X, Keycode.Y, Keycode.Z, Keycode.AltLeft, Keycode.AltRight, Keycode.Apostrophe, Keycode.AppSwitch, Keycode.Assist, Keycode.At, Keycode.AvrInput, Keycode.AvrPower, Keycode.Back, Keycode.Backslash, Keycode.Bookmark, Keycode.Break, Keycode.BrightnessUp, Keycode.BrightnessDown, Keycode.Button1, Keycode.Button2, Keycode.Button3, Keycode.Button4, Keycode.Button5, Keycode.Button6, Keycode.Button7, Keycode.Button8, Keycode.Button9, Keycode.Button10, Keycode.Button11, Keycode.Button12, Keycode.Button13, Keycode.Button14, Keycode.Button15, Keycode.Button16, Keycode.ButtonA, Keycode.ButtonB, Keycode.ButtonC, Keycode.ButtonX, Keycode.ButtonY, Keycode.ButtonZ, Keycode.ButtonL1, Keycode.ButtonL2, Keycode.ButtonR1, Keycode.ButtonR2, Keycode.ButtonSelect, Keycode.ButtonStart, Keycode.ButtonMode, Keycode.ButtonThumbl, Keycode.ButtonThumbr, Keycode.Calculator, Keycode.Calendar, Keycode.Call, Keycode.Camera, Keycode.CapsLock, Keycode.Captions, Keycode.ChannelUp, Keycode.ChannelDown, Keycode.Clear, Keycode.Comma, Keycode.Contacts, Keycode.Copy, Keycode.CtrlLeft, Keycode.CtrlRight, Keycode.Cut, Keycode.Del, Keycode.DpadCenter, Keycode.DpadDownLeft, Keycode.DpadDownRight, Keycode.DpadUpLeft, Keycode.DpadUpRight, Keycode.DpadLeft, Keycode.DpadRight, Keycode.DpadUp, Keycode.DpadDown, Keycode.Dvr, Keycode.Eisu, Keycode.Endcall, Keycode.Enter, Keycode.Envelope, Keycode.Equals, Keycode.Escape, Keycode.Explorer, Keycode.F1, Keycode.F2, Keycode.F3, Keycode.F4, Keycode.F5, Keycode.F6, Keycode.F7, Keycode.F8, Keycode.F9, Keycode.F10, Keycode.F11, Keycode.F12, Keycode.Focus, Keycode.Forward, Keycode.ForwardDel, Keycode.Function, Keycode.Grave, Keycode.Guide, Keycode.Headsethook, Keycode.Help, Keycode.Henkan, Keycode.Home, Keycode.Info, Keycode.Insert, Keycode.K11, Keycode.K12, Keycode.Kana, Keycode.KatakanaHiragana, Keycode.LanguageSwitch, Keycode.LastChannel, Keycode.LeftBracket, Keycode.MannerMode, Keycode.MediaAudioTrack, Keycode.MediaClose, Keycode.MediaEject, Keycode.MediaFastForward, Keycode.MediaNext, Keycode.MediaPause, Keycode.MediaPlay, Keycode.MediaPlayPause, Keycode.MediaPrevious, Keycode.MediaRecord, Keycode.MediaRewind, Keycode.MediaStop, Keycode.Menu, Keycode.Minus, Keycode.Music, Keycode.Mute, Keycode.NavigateIn, Keycode.NavigateOut, Keycode.NavigatePrevious, Keycode.Notification, Keycode.Num, Keycode.Num0, Keycode.Num1, Keycode.Num2, Keycode.Num3, Keycode.Num4, Keycode.Num5, Keycode.Num6, Keycode.Num7, Keycode.Num8, Keycode.Num9, Keycode.NumLock, Keycode.Numpad0, Keycode.Numpad1, Keycode.Numpad2, Keycode.Numpad3, Keycode.Numpad4, Keycode.Numpad5, Keycode.Numpad6, Keycode.Numpad7, Keycode.Numpad8, Keycode.Numpad9, Keycode.NumpadAdd, Keycode.NumpadComma, Keycode.NumpadDivide, Keycode.NumpadDot, Keycode.NumpadEnter, Keycode.NumpadEquals, Keycode.NumpadMultiply, Keycode.NumpadSubtract, Keycode.NumpadLeftParen, Keycode.NumpadRightParen, Keycode.PageDown, Keycode.PageUp, Keycode.Pairing, Keycode.Paste, Keycode.Period, Keycode.Plus, Keycode.Pound, Keycode.Power, Keycode.ProgGreen, Keycode.ProgRed, Keycode.ProgBlue, Keycode.ProgYellow, Keycode.RightBracket, Keycode.Search, Keycode.Semicolon, Keycode.Settings, Keycode.ShiftLeft, Keycode.ShiftRight, Keycode.Slash, Keycode.Sleep, Keycode.Space, Keycode.Star, Keycode.Sym, Keycode.Sysrq, Keycode.Tab, Keycode.VolumeDown, Keycode.VolumeUp, Keycode.VolumeMute, Keycode.Wakeup, Keycode.Window, Keycode.ZoomIn, Keycode.ZoomOut };
 
         // Key Strings (some may be missing, but are not too important)
         readonly string[] dispKeys = {
@@ -31,26 +31,26 @@ namespace VitaMote
             // UI elements
             spinners = new[]
             {
-                (Spinner)FindViewById(Resource.Id.spinner1), 
-                (Spinner)FindViewById(Resource.Id.spinner2), 
-                (Spinner)FindViewById(Resource.Id.spinner3), 
-                (Spinner)FindViewById(Resource.Id.spinner4), 
-                (Spinner)FindViewById(Resource.Id.spinner5), 
-                (Spinner)FindViewById(Resource.Id.spinner6), 
-                (Spinner)FindViewById(Resource.Id.spinner7), 
-                (Spinner)FindViewById(Resource.Id.spinner8), 
-                (Spinner)FindViewById(Resource.Id.spinner9), 
-                (Spinner)FindViewById(Resource.Id.spinner10), 
-                (Spinner)FindViewById(Resource.Id.spinner11), 
-                (Spinner)FindViewById(Resource.Id.spinner12), 
-                (Spinner)FindViewById(Resource.Id.spinner13), 
-                (Spinner)FindViewById(Resource.Id.spinner14), 
-                (Spinner)FindViewById(Resource.Id.spinner15), 
-                (Spinner)FindViewById(Resource.Id.spinner16), 
-                (Spinner)FindViewById(Resource.Id.spinner17), 
-                (Spinner)FindViewById(Resource.Id.spinner18), 
-                (Spinner)FindViewById(Resource.Id.spinner19), 
-                (Spinner)FindViewById(Resource.Id.spinner20) 
+                (Spinner)FindViewById(Resource.Id.spinner1),
+                (Spinner)FindViewById(Resource.Id.spinner2),
+                (Spinner)FindViewById(Resource.Id.spinner3),
+                (Spinner)FindViewById(Resource.Id.spinner4),
+                (Spinner)FindViewById(Resource.Id.spinner5),
+                (Spinner)FindViewById(Resource.Id.spinner6),
+                (Spinner)FindViewById(Resource.Id.spinner7),
+                (Spinner)FindViewById(Resource.Id.spinner8),
+                (Spinner)FindViewById(Resource.Id.spinner9),
+                (Spinner)FindViewById(Resource.Id.spinner10),
+                (Spinner)FindViewById(Resource.Id.spinner11),
+                (Spinner)FindViewById(Resource.Id.spinner12),
+                (Spinner)FindViewById(Resource.Id.spinner13),
+                (Spinner)FindViewById(Resource.Id.spinner14),
+                (Spinner)FindViewById(Resource.Id.spinner15),
+                (Spinner)FindViewById(Resource.Id.spinner16),
+                (Spinner)FindViewById(Resource.Id.spinner17),
+                (Spinner)FindViewById(Resource.Id.spinner18),
+                (Spinner)FindViewById(Resource.Id.spinner19),
+                (Spinner)FindViewById(Resource.Id.spinner20)
             };
 
             Button butLo = (Button)FindViewById(Resource.Id.btnLoad);
@@ -93,24 +93,49 @@ namespace VitaMote
         }
         public void LoadCM()
         {
-            try
-            {
-                var cmFile = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "cm.scf");
-                var lines = File.ReadAllLines(cmFile);
+            // TODO: fix the custom mapping
+            // "Default" keys, in the same order than the spinners,
+            // of which the values will change with a custom mapping
+            //Keycode[] customMapping = {
+            //    bUp,
+            //    bRi,
+            //    bDo,
+            //    bLe,
+            //    bLt,
+            //    bRt,
+            //    bX,
+            //    bC,
+            //    bT,
+            //    bS,
+            //    bSe,
+            //    bSt,
+            //    aLu,
+            //    aLr,
+            //    aLd,
+            //    aLl,
+            //    aRu,
+            //    aRr,
+            //    aRd,
+            //    aRl
+            //};
+            var cmFile = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "cm.scf");
 
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    var line = lines[i];
-                    var spinner = spinners[i];
-
-                    spinner.SetSelection(keycodes.IndexOf((Keycode)int.Parse(line)));
-                }
-            }
-            catch (Exception exc)
+            if (!File.Exists(cmFile))
             {
-                Console.WriteLine(exc);
+                Log.Info("LoadCM", "Custom mapping file does not exist");
                 SetDefaults();
                 SaveCM();
+                return;
+            }
+
+            var lines = File.ReadAllLines(cmFile);
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i];
+                var spinner = spinners[i];
+
+                spinner.SetSelection(keycodes.IndexOf((Keycode)int.Parse(line)));
             }
         }
         private void SetDefaults()

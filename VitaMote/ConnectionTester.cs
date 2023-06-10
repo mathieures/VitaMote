@@ -9,7 +9,6 @@ using Android.App;
 using Android.OS;
 using Android.Util;
 using Android.Widget;
-using Xamarin.Essentials;
 
 namespace VitaMote
 {
@@ -18,7 +17,7 @@ namespace VitaMote
     {
         bool running = false;
 
-        VitaConnection _connection = new VitaConnection();
+        VitaConnection connection;
 
         TextView connectionStatusText;
         TextView displayText;
@@ -29,6 +28,8 @@ namespace VitaMote
 
             SetContentView(Resource.Layout.connection_tester);
 
+            connection = VitaConnection.Instance;
+
             connectionStatusText = FindViewById<TextView>(Resource.Id.connectionStatus);
             displayText = FindViewById<TextView>(Resource.Id.displayText);
         }
@@ -38,31 +39,17 @@ namespace VitaMote
             base.OnStart();
             running = true;
 
-            string ip = Preferences.Get("ip", null);
-            int port = 5000;
-
-            // Change the port in case it is specified
-            if (ip.Contains(':'))
-            {
-                port = int.Parse(ip.Split(':')[1]);
-                ip = ip.Split(':')[0];
-            }
-
-            // Connect the TCP client
-
             // Show connecting message
             connectionStatusText.Text = Resources.GetString(Resource.String.connecting);
             displayText.Text = connectionStatusText.Text;
 
-            try
-            {
-                await _connection.Init(ip, port);
-            }
-            catch (Exception ex)
-            {
-                Toast.MakeText(this, $"Couldn't connect to IP '{ip}' and port '{port}'", ToastLength.Long).Show();
-                Log.Error("TryConnectionAsync", ex.ToString());
+            // Connect the TCP client
 
+            // If the PSVita is not connected, try to connect. If it fails, stop the activity.
+            if (connection.ConnectionStatus != ConnectionStatus.Connected
+                && await connection.ConnectAsync() != ConnectionStatus.Connected)
+            {
+                Toast.MakeText(this, $"Couldn't connect to IP '{connection.Settings.IP}' and port '{connection.Settings.Port}'", ToastLength.Long).Show();
                 Finish();
                 return;
             }
@@ -76,18 +63,17 @@ namespace VitaMote
         }
         protected override void OnStop()
         {
-            Log.Info("On stop", "running = false");
             base.OnStop();
             running = false;
         }
+
         async Task RunAsync()
         {
             try
             {
-                // TODO: find a stop condition
                 while (running)
                 {
-                    var keyStates = await _connection.UpdateAsync();
+                    var keyStates = await connection.UpdateAsync();
                     // Display the text on the screen
                     var sb = new StringBuilder();
 

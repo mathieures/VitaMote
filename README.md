@@ -9,6 +9,10 @@ Planned improvements:
 - [x] Remove the deprecated `Keyboard` and `KeyboardView` classes
 - [x] Fix the custom keyboard not appearing (I wonder if it's needed at all)
 - [x] Send keys from the PSVita to the app
-- [x] Interact with other processes (create a new Input Method to send those keys to other processes)
-- [ ] Send gamepad keys to a process based on the received PSVita keys (by putting the HTTP client in the Input Method Service, I think)
+- [x] Interact with other processes (create a new Input Method Service to send those keys to other processes)
+- [x] Send gamepad keys to a process based on the received PSVita keys (parse the keys in the Input Method Service)
 - [ ] Reduce input lag
+
+Impossible to improve:
+
+- When the app is closed, the PSVita still says it is "Connected", but it is not (limitation of VitaPad). The only solution is to restart the VitaPad app on the PSVita.

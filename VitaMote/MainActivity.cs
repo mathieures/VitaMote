@@ -9,9 +9,10 @@ using Xamarin.Essentials;
 namespace VitaMote
 {
     [Activity(Label = "VitaMote", MainLauncher = true, Icon = "@drawable/icon")]
-    public class MainActivity : Activity {
-
+    public class MainActivity : Activity
+    {
         TextView ipTextView;
+        VitaConnection vitaConnection;
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -27,23 +28,25 @@ namespace VitaMote
             Button customMappingButton = FindViewById<Button>(Resource.Id.customMappingBtn);
             Button testConnectionButton = FindViewById<Button>(Resource.Id.testConnectionButton);
             Button testIMEButton = FindViewById<Button>(Resource.Id.testIMEButton);
-            
+
             EditText ipEditText = FindViewById<EditText>(Resource.Id.ipEditText);
 
             ipTextView = FindViewById<TextView>(Resource.Id.savedIPTextView);
 
             // If no IP was saved or if it is empty, set the text to the default IP
-            var ip = GetSavedIP();
-            if (ip == null || ip == "")
+            var settings = new SavedSettings(); // Load the current settings
+            if (string.IsNullOrEmpty(settings.IP))
             {
                 Toast.MakeText(this, "Remember to store an IP", ToastLength.Long).Show();
                 ipTextView.Text = "No IP Saved";
             }
             else
             {
-                ipEditText.Text = ip;
+                ipEditText.Text = settings.IP;
                 ipTextView.Text = ipEditText.Text;
             }
+
+            vitaConnection = VitaConnection.Instance;
 
             // On click, save the IP
             saveButton.Click += delegate

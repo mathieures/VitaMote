@@ -1,16 +1,39 @@
 ﻿using System;
-using Android.Util;
-using Android.Widget;
-using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Threading.Tasks;
+using Android.Util;
 using Android.Views;
-using System.IO;
-using System.Text;
+using Xamarin.Essentials;
 
 namespace VitaMote
 {
+    public enum ConnectionStatus
+    {
+        Online,      // The PSVita can be pinged, but cannot receive or send data packets
+        Unreachable, // The PSVita cannot be pinged
+        Connected    // The PSVita can receive and send data packets
+    }
+
+    // Class representing the saved settings at the time it is instantiated
+    public class SavedSettings
+    {
+        public string IP { get; }
+        public int Port { get; }
+
+        public SavedSettings()
+        {
+            IP = Preferences.Get("ip", null);
+            Port = 5000;
+            // Change the port in case it is specified
+            if (!string.IsNullOrEmpty(IP) && IP.Contains(':'))
+            {
+                Port = int.Parse(IP.Split(':')[1]);
+                IP = IP.Split(':')[0];
+            }
+        }
+    }
     class DataPacket
     {
         public const int size = 16; // 16 bytes in total // je crois, s’il y a du padding // je suis assez confiant que 16 est correct
@@ -41,41 +64,76 @@ namespace VitaMote
         }
     }
 
-    class VitaConnection
+    // Singleton class representing the network connection with the PSVita (started or not)
+    public sealed class VitaConnection
     {
-        TcpClient tcpClient;
+        private static VitaConnection instance = null;
 
-        public VitaConnection() { }
-
-        public async Task Init(string ip, int port)
+        private VitaConnection()
         {
-            tcpClient = new TcpClient();
-            await TryConnectionAsync(tcpClient, ip, port);
+            settings = new SavedSettings();
         }
 
-        async Task TryConnectionAsync(TcpClient tcpClient, string ip, int port)
+        public static VitaConnection Instance
+        {
+            get
+            {
+                instance ??= new VitaConnection();
+                return instance;
+            }
+        }
+        public SavedSettings Settings => settings;
+
+        public ConnectionStatus ConnectionStatus => connectionStatus;
+
+        SavedSettings settings; // Contains the SavedSettings used for the last call at ConnectAsync()
+        ConnectionStatus connectionStatus;
+
+        TcpClient tcpClient;
+        NetworkStream stream;
+
+        // Try to connect to the PSVita and return the connection status
+        public async Task<ConnectionStatus> ConnectAsync()
         {
             using Ping ping = new Ping();
+            settings = new SavedSettings(); // Apply the most recent saved settings
 
-            PingReply reply = await ping.SendPingAsync(ip);
-            Log.Info("Ping", $"Ping status for ({ip}): {reply.Status}");
-            if (reply is { Status: IPStatus.Success })
+            PingReply reply = await ping.SendPingAsync(settings.IP);
+            Log.Info("Ping", $"Ping status for ({settings.IP}): {reply.Status}");
+
+            // If the ping failed, we are not connected
+            if (!(reply is { Status: IPStatus.Success }))
+            {
+                Log.Error("ConnectAsync", $"{settings.IP}:{settings.Port} is unreachable");
+                connectionStatus = ConnectionStatus.Unreachable;
+            }
+            // If the ping is successful and we are not connected, do so
+            else if (connectionStatus != ConnectionStatus.Connected)
             {
                 Log.Info("Ping", $"Address: {reply.Address}");
                 Log.Info("Ping", $"Roundtrip time: {reply.RoundtripTime}");
                 Log.Info("Ping", $"Time to live: {reply.Options?.Ttl}");
 
                 // Actually connect to the PSVita
-                tcpClient.Connect(ip, port);
+                try
+                {
+                    tcpClient = new TcpClient(settings.IP, settings.Port);
+                    stream = tcpClient.GetStream();
+                    connectionStatus = ConnectionStatus.Connected;
+                }
+                catch (SocketException)
+                {
+                    tcpClient?.Close();
+                    Log.Error("ConnectAsync", $"Connection refused to {settings.IP}:{settings.Port}");
+                    connectionStatus = ConnectionStatus.Online;
+                }
             }
-            else
-            {
-                throw new Exception($"{ip}:{port} is unreachable");
-            }
+            // Else, we are already connected
+            return connectionStatus;
         }
+
         public async Task<Dictionary<Keycode, bool>> UpdateAsync()
         {
-            NetworkStream stream = tcpClient.GetStream();
             byte[] receivedBytes = new byte[DataPacket.size];
             DataPacket data;
 
@@ -446,7 +504,6 @@ namespace VitaMote
                 keyStates[ButtonHelper.aRd] = true;
 
             */
-            // TODO: do the actual stuff with the keycodes
         }
 
         void ParseSticks(UInt32 data, Dictionary<Keycode, bool> keyStates) { }
