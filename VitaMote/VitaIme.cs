@@ -8,7 +8,7 @@ using Android.Views;
 
 namespace VitaMote
 {
-    [Service(Label = "PSVIta", Permission = "android.permission.BIND_INPUT_METHOD", Exported = true)]
+    [Service(Label = "PSVita", Permission = "android.permission.BIND_INPUT_METHOD", Exported = true)]
     [MetaData(name: "android.view.im", Resource = "@xml/method")]
     [IntentFilter(new[] { "android.view.InputMethod" })]
     public class VitaIme : InputMethodService

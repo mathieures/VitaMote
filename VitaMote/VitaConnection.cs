@@ -137,36 +137,36 @@ namespace VitaMote
         {
             // SEL-STA
             if ((data & ButtonHelper.SCE_CTRL_SELECT) != 0)
-                keyStates[ButtonHelper.buttonToKeycode[ButtonHelper.SCE_CTRL_SELECT]] = true;
+                keyStates[ButtonHelper.ButtonToKeycode(ButtonHelper.SCE_CTRL_SELECT)] = true;
             if ((data & ButtonHelper.SCE_CTRL_START) != 0)
-                keyStates[ButtonHelper.buttonToKeycode[ButtonHelper.SCE_CTRL_START]] = true;
+                keyStates[ButtonHelper.ButtonToKeycode(ButtonHelper.SCE_CTRL_START)] = true;
             // DPAD
             if ((data & ButtonHelper.SCE_CTRL_UP) != 0)
-                keyStates[ButtonHelper.buttonToKeycode[ButtonHelper.SCE_CTRL_UP]] = true;
+                keyStates[ButtonHelper.ButtonToKeycode(ButtonHelper.SCE_CTRL_UP)] = true;
             if ((data & ButtonHelper.SCE_CTRL_RIGHT) != 0)
-                keyStates[ButtonHelper.buttonToKeycode[ButtonHelper.SCE_CTRL_RIGHT]] = true;
+                keyStates[ButtonHelper.ButtonToKeycode(ButtonHelper.SCE_CTRL_RIGHT)] = true;
             if ((data & ButtonHelper.SCE_CTRL_DOWN) != 0)
-                keyStates[ButtonHelper.buttonToKeycode[ButtonHelper.SCE_CTRL_DOWN]] = true;
+                keyStates[ButtonHelper.ButtonToKeycode(ButtonHelper.SCE_CTRL_DOWN)] = true;
             if ((data & ButtonHelper.SCE_CTRL_LEFT) != 0)
-                keyStates[ButtonHelper.buttonToKeycode[ButtonHelper.SCE_CTRL_LEFT]] = true;
+                keyStates[ButtonHelper.ButtonToKeycode(ButtonHelper.SCE_CTRL_LEFT)] = true;
             // L-R Triggers
             if ((data & ButtonHelper.SCE_CTRL_LTRIGGER) != 0)
-                keyStates[ButtonHelper.buttonToKeycode[ButtonHelper.SCE_CTRL_LTRIGGER]] = true;
+                keyStates[ButtonHelper.ButtonToKeycode(ButtonHelper.SCE_CTRL_LTRIGGER)] = true;
             if ((data & ButtonHelper.SCE_CTRL_RTRIGGER) != 0)
-                keyStates[ButtonHelper.buttonToKeycode[ButtonHelper.SCE_CTRL_RTRIGGER]] = true;
+                keyStates[ButtonHelper.ButtonToKeycode(ButtonHelper.SCE_CTRL_RTRIGGER)] = true;
             // TCXS
             if ((data & ButtonHelper.SCE_CTRL_TRIANGLE) != 0)
-                keyStates[ButtonHelper.buttonToKeycode[ButtonHelper.SCE_CTRL_TRIANGLE]] = true;
+                keyStates[ButtonHelper.ButtonToKeycode(ButtonHelper.SCE_CTRL_TRIANGLE)] = true;
             if ((data & ButtonHelper.SCE_CTRL_CIRCLE) != 0)
-                keyStates[ButtonHelper.buttonToKeycode[ButtonHelper.SCE_CTRL_CIRCLE]] = true;
+                keyStates[ButtonHelper.ButtonToKeycode(ButtonHelper.SCE_CTRL_CIRCLE)] = true;
             if ((data & ButtonHelper.SCE_CTRL_CROSS) != 0)
-                keyStates[ButtonHelper.buttonToKeycode[ButtonHelper.SCE_CTRL_CROSS]] = true;
+                keyStates[ButtonHelper.ButtonToKeycode(ButtonHelper.SCE_CTRL_CROSS)] = true;
             if ((data & ButtonHelper.SCE_CTRL_SQUARE) != 0)
-                keyStates[ButtonHelper.buttonToKeycode[ButtonHelper.SCE_CTRL_SQUARE]] = true;
+                keyStates[ButtonHelper.ButtonToKeycode(ButtonHelper.SCE_CTRL_SQUARE)] = true;
 
 
 
-            // Commenté pour l’instant pour tester les opérations bit à bit
+            // Commented for now to test bitwise operations
 
             /*
             // First int takes care of DPAD, Start, Select
